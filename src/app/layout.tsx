@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Inter } from "next/font/google";
+
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -23,19 +24,19 @@ export const metadata: Metadata = {
   description: "A link and text post discussion platform.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        dmSans.variable,
-        inter.variable,
-        geistMono.variable,
-      )}
-    >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: LayoutProps<"/">) => (
+  <html
+    lang="en"
+    className={cn(
+      "h-full",
+      "antialiased",
+      dmSans.variable,
+      inter.variable,
+      geistMono.variable
+    )}
+  >
+    <body className="flex min-h-full flex-col font-sans">{children}</body>
+  </html>
+);
+
+export default RootLayout;

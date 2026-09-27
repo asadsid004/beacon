@@ -51,3 +51,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Task verification checklist
+
+Run this checklist before declaring any task complete or presenting code for review:
+
+1. **Format and lint:** Run `bun run fix` to format with Oxfmt and autofix Oxlint warnings.
+2. **Type check:** Run `bun x tsc --noEmit` to verify zero TypeScript errors.
+3. **React diagnostics:** Run `bunx react-doctor@latest --scope changed` to audit modified components for performance, hydration, and architectural issues. Fix any reported error diagnostics.
+4. **Production build:** Run `bun run build` to confirm the Next.js production build succeeds with no route or bundle failures.
+5. **Responsive review:** If modifying UI layouts, inspect screens at 1280, 1366, 1440, and 1512 pixels per `docs/design-rules.md`.
+6. **No incomplete submissions:** Never mark a task complete or create a commit if any verification step fails.
+
+Full code standards reference: `.agents/skills/ultracite/references/code-standards.md`.
