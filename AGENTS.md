@@ -34,6 +34,7 @@ Product spec lives in `docs/`. Treat those files as source of truth over this on
 - Core invariants: one tag per post; comments nest at most one level; upvotes only (toggle off on second click); unpublish only when `commentCount` is 0; delete is hard when there are no comments and soft when there are (see ADR 0001).
 - Automated tests are Playwright against user-visible behavior. Do not mock the database. Server Action rules are verified by hand unless a later phase says otherwise.
 - UI fonts: DM Sans (`font-heading`), Inter (`font-sans`), Geist Mono (`font-mono`).
+- Brand accent is Orange, mapped to shadcn semantic tokens (`bg-primary`, `text-primary`). Do not hardcode black buttons or custom hex values.
 
 ## Layout and responsiveness
 

@@ -112,6 +112,27 @@ Do not stop testing at mobile and wide desktop. The laptop range between 1280 an
 
 ---
 
+## Color system and tokens
+
+Beacon uses an orange brand accent over neutral backgrounds, configured through shadcn semantic variables in `src/app/globals.css`.
+
+### Brand primary (Orange)
+- Light mode: `oklch(0.553 0.195 38.402)`
+- Dark mode: `oklch(0.47 0.157 37.304)`
+- Usage: Primary action buttons (`+ New post`, form submissions), active upvote states, active tab indicators, and brand accents.
+- Implementation: Use `bg-primary`, `text-primary-foreground`, and `text-primary`. Do not hardcode raw hex codes or utility classes like `bg-orange-500`.
+
+### Neutral surfaces and text
+- Cards and containers: `bg-card` with `border-border`.
+- Primary copy: `text-foreground`.
+- Metadata, dates, and author usernames: `text-muted-foreground`.
+- Interactive hover states: `hover:bg-accent hover:text-accent-foreground`.
+
+### Agent rule for styling
+Never hardcode black buttons (`bg-black`, `bg-zinc-900`) or custom hex colors. Always reference semantic shadcn tokens so light and dark modes resolve automatically.
+
+---
+
 ## Animation and transition standards
 
 ### 1. Blur reveal transitions

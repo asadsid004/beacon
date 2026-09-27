@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+  variable: "--font-heading",
   subsets: ["latin"],
 });
 
 const inter = Inter({
-  variable: "--font-inter",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -26,7 +27,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={cn(
+        "h-full",
+        "antialiased",
+        dmSans.variable,
+        inter.variable,
+        geistMono.variable,
+      )}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
