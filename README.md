@@ -32,11 +32,45 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 - **Voting.** Upvotes increment post score and author karma. A second click on an active upvote removes the vote. Downvotes do not exist.
 - **Caching.** Public routes use Next.js cache components with explicit cache tags. Server Actions invalidate these tags on data mutation.
 
+## Getting started
+
+### Prerequisites
+
+- [Bun](https://bun.sh) (v1.2.8 or later)
+- PostgreSQL database (such as Neon, Supabase, Railway, or local Docker)
+
+### Setup
+
+1. Install dependencies:
+
+   ```bash
+   bun install
+   ```
+
+2. Configure environment variables:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Provide the required values in `.env.local`:
+   - `DATABASE_URL`: PostgreSQL connection string.
+   - `BETTER_AUTH_SECRET`: Random 32+ character string for token signing.
+   - `BETTER_AUTH_URL`: Application URL (e.g. `http://localhost:3000`).
+
+3. Start the development server:
+   ```bash
+   bun dev
+   ```
+
 ## Available scripts
 
 - `bun dev`: Starts the local development server.
 - `bun run build`: Builds the application for production.
 - `bun run start`: Runs the built production server.
+- `bun run check`: Checks formatting with Oxfmt and runs Oxlint.
+- `bun run fix`: Automatically formats code and fixes lint issues.
+- `bun run doctor`: Runs React Doctor component diagnostic audit.
 
 ## Project structure
 
