@@ -55,7 +55,7 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 
    Provide the required values in `.env.local`:
    - `DATABASE_URL`: PostgreSQL connection string.
-   - `BETTER_AUTH_SECRET`: Random 32+ character string for token signing.
+   - `BETTER_AUTH_SECRET`: Random 32+ character string for token signing (generate with `bun x auth secret`).
    - `BETTER_AUTH_URL`: Application URL (e.g. `http://localhost:3000`).
 
 3. (Optional) Start local PostgreSQL with Docker:
@@ -64,7 +64,7 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
    docker compose up -d
    ```
 
-4. Start the development server: Start the development server:
+4. Start the development server:
    ```bash
    bun dev
    ```

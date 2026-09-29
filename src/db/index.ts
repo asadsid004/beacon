@@ -3,6 +3,8 @@ import { Pool } from "pg";
 
 import { env } from "@/env";
 
+import * as schema from "./schema";
+
 declare global {
   var postgresPool: Pool | undefined;
 }
@@ -17,6 +19,6 @@ if (env.NODE_ENV !== "production") {
   globalThis.postgresPool = pool;
 }
 
-export const db = drizzle({ client: pool });
+export const db = drizzle({ client: pool, schema });
 
 export type Database = typeof db;
