@@ -55,7 +55,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.553 0.195 38.402);
+  --primary: oklch(63.949% 0.19745 37.784);
   --primary-foreground: oklch(0.98 0.016 73.684);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -72,7 +72,7 @@
   --chart-3: oklch(0.646 0.222 41.116);
   --chart-4: oklch(0.553 0.195 38.402);
   --chart-5: oklch(0.47 0.157 37.304);
-  --radius: 0.45rem;
+  --radius: 0.3rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.646 0.222 41.116);
@@ -90,7 +90,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.47 0.157 37.304);
+  --primary: oklch(60.256% 0.20938 35.381);
   --primary-foreground: oklch(0.98 0.016 73.684);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -131,4 +131,34 @@
   html {
     @apply font-sans;
   }
+}
+
+@utility bg-auth-showcase {
+  background:
+    radial-gradient(
+      120% 80% at 0% 0%,
+      color-mix(in oklch, white 14%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      to bottom right in oklch,
+      var(--primary),
+      color-mix(in oklch, var(--primary), black 30%),
+      color-mix(in oklch, var(--primary), black 5%)
+    );
+}
+
+.dark .bg-auth-showcase,
+:is(.dark *) .bg-auth-showcase {
+  background:
+    radial-gradient(
+      120% 80% at 0% 0%,
+      color-mix(in oklch, white 14%, transparent),
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom right in oklch,
+      color-mix(in oklch, var(--primary), black 15%),
+      color-mix(in oklch, var(--primary), black 35%)
+    );
 }

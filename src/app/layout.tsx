@@ -20,7 +20,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Beacon",
+  title: {
+    default: "Beacon",
+    template: "%s | Beacon",
+  },
   description: "A link and text post discussion platform.",
 };
 

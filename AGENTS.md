@@ -36,6 +36,18 @@ Product spec lives in `docs/`. Treat those files as source of truth over this on
 - UI fonts: DM Sans (`font-heading`), Inter (`font-sans`), Geist Mono (`font-mono`).
 - Brand accent is Orange, mapped to shadcn semantic tokens (`bg-primary`, `text-primary`). Do not hardcode black buttons or custom hex values.
 
+## Feature-based architecture and code organization
+
+- **Feature-first organization:** Domain-specific code lives encapsulated under `src/features/<feature>/` (for example, `src/features/auth/`).
+- **Inside each feature:** Group feature-scoped components (`components/`), validation schemas (`validations.ts`), and feature-specific hooks or utilities.
+- **Shared code lives outside `features/`:**
+  - `src/components/ui/`: generic UI design system primitives (Base UI, shadcn).
+  - `src/components/form/`: reusable TanStack Form composition primitives and context.
+  - `src/hooks/`: cross-cutting application hooks (for example, `use-app-form.ts`).
+  - `src/lib/`: infrastructure utilities, app-wide client/server auth configuration (`auth.ts`, `auth-client.ts`), and helpers.
+  - `src/db/`: database schemas, migrations, and Drizzle clients.
+  - `src/app/`: Next.js App Router entry points, kept thin as composition routes importing feature components.
+
 ## Layout and responsiveness
 
 - Test responsive layouts at widths of 1280, 1366, 1440, and 1512 pixels before marking any UI task complete.
