@@ -6,17 +6,12 @@ import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
 
-import { errorDisplaySchema, useFieldContext } from "./form-context";
+import { FormFieldError, useFieldError } from "./form-field-error";
 import type { FormInputProps } from "./form-input";
 
 export const FormPasswordInput = ({ className, ...props }: FormInputProps) => {
-  const field = useFieldContext<string>();
+  const { field, isInvalid, firstError } = useFieldError<string>();
   const [showPassword, setShowPassword] = useState(false);
-  const isInvalid =
-    Boolean(field.state.meta.isTouched) && field.state.meta.errors.length > 0;
-  const firstError = isInvalid
-    ? (errorDisplaySchema.safeParse(field.state.meta.errors[0]).data ?? null)
-    : null;
 
   return (
     <div className="w-full">
@@ -47,11 +42,7 @@ export const FormPasswordInput = ({ className, ...props }: FormInputProps) => {
           />
         </button>
       </div>
-      {firstError ? (
-        <p className="text-destructive mt-1.5 text-xs font-medium">
-          {firstError}
-        </p>
-      ) : null}
+      <FormFieldError error={firstError} />
     </div>
   );
 };

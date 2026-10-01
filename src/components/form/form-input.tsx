@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import type { InputProps } from "@/components/ui/input";
 
-import { errorDisplaySchema, useFieldContext } from "./form-context";
+import { FormFieldError, useFieldError } from "./form-field-error";
 
 export interface FormInputProps extends Omit<
   InputProps,
@@ -17,12 +17,7 @@ export const FormInput = ({
   className,
   ...props
 }: FormInputProps) => {
-  const field = useFieldContext<string>();
-  const isInvalid =
-    Boolean(field.state.meta.isTouched) && field.state.meta.errors.length > 0;
-  const firstError = isInvalid
-    ? (errorDisplaySchema.safeParse(field.state.meta.errors[0]).data ?? null)
-    : null;
+  const { field, isInvalid, firstError } = useFieldError<string>();
 
   return (
     <div className="w-full">
@@ -40,11 +35,7 @@ export const FormInput = ({
         className={className}
         {...props}
       />
-      {firstError ? (
-        <p className="text-destructive mt-1.5 text-xs font-medium">
-          {firstError}
-        </p>
-      ) : null}
+      <FormFieldError error={firstError} />
     </div>
   );
 };
