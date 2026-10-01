@@ -73,7 +73,6 @@ export const SignupForm = () => {
               aria-label="Username"
               autoComplete="username"
               autoLowercase
-              autoFocus
             />
           )}
         </form.AppField>

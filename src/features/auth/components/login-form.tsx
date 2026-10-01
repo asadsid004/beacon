@@ -70,7 +70,6 @@ export const LoginForm = () => {
               placeholder="Username or email"
               aria-label="Username or email"
               autoComplete="username"
-              autoFocus
             />
           )}
         </form.AppField>
