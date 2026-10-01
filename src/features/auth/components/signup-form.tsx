@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { signupSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
-import { authClient } from "@/lib/auth-client";
-
-import { signupSchema } from "../validations";
+import { signUp } from "@/lib/auth-client";
 
 export const SignupForm = () => {
   const router = useRouter();
@@ -24,14 +23,11 @@ export const SignupForm = () => {
     },
     onSubmit: async ({ value }) => {
       setServerError(null);
-      const normalizedUsername = value.username.trim().toLowerCase();
-      const normalizedEmail = value.email.trim().toLowerCase();
 
-      const { error } = await authClient.signUp.email({
-        email: normalizedEmail,
+      const { error } = await signUp({
+        username: value.username,
+        email: value.email,
         password: value.password,
-        name: normalizedUsername,
-        username: normalizedUsername,
       });
 
       if (error) {

@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { loginSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
-import { authClient } from "@/lib/auth-client";
-
-import { loginSchema } from "../validations";
+import { login } from "@/lib/auth-client";
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -23,27 +22,15 @@ export const LoginForm = () => {
     },
     onSubmit: async ({ value }) => {
       setServerError(null);
-      const trimmedIdentifier = value.identifier.trim();
-      const isEmail = trimmedIdentifier.includes("@");
 
-      if (isEmail) {
-        const { error } = await authClient.signIn.email({
-          email: trimmedIdentifier.toLowerCase(),
-          password: value.password,
-        });
-        if (error) {
-          setServerError(error.message || "Invalid email or password");
-          return;
-        }
-      } else {
-        const { error } = await authClient.signIn.username({
-          username: trimmedIdentifier.toLowerCase(),
-          password: value.password,
-        });
-        if (error) {
-          setServerError(error.message || "Invalid username or password");
-          return;
-        }
+      const { error } = await login({
+        identifier: value.identifier,
+        password: value.password,
+      });
+
+      if (error) {
+        setServerError(error.message || "Invalid credentials");
+        return;
       }
 
       router.push("/dashboard");
