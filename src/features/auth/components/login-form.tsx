@@ -53,12 +53,12 @@ export const LoginForm = () => {
 
   return (
     <div className="mx-auto my-auto w-full max-w-sm py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="font-heading text-foreground text-3xl font-semibold tracking-tight">
           Welcome back
         </h1>
         <p className="text-muted-foreground mt-1.5 text-sm">
-          Sign in to your account with your username or email
+          Login to your account with your username or email
         </p>
       </div>
 
@@ -99,7 +99,7 @@ export const LoginForm = () => {
         </form.AppField>
 
         <form.AppForm>
-          <form.SubmitButton className="mt-2">Sign in</form.SubmitButton>
+          <form.SubmitButton className="mt-2">Login</form.SubmitButton>
         </form.AppForm>
       </form>
 

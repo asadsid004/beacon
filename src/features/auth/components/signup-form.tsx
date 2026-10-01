@@ -46,7 +46,7 @@ export const SignupForm = () => {
 
   return (
     <div className="mx-auto my-auto w-full max-w-sm py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="font-heading text-foreground text-3xl font-semibold tracking-tight">
           Create your account
         </h1>
@@ -114,7 +114,7 @@ export const SignupForm = () => {
           href="/login"
           className="text-foreground font-medium underline-offset-4 hover:underline"
         >
-          Sign in
+          Login
         </Link>
       </p>
     </div>

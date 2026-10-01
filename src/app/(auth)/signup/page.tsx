@@ -21,7 +21,7 @@ const SignupPage = () => (
         href="/login"
         className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
       >
-        Sign in
+        Login
       </Link>
     </header>
 

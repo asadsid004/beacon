@@ -4,8 +4,8 @@ import Link from "next/link";
 import { LoginForm } from "@/features/auth/components/login-form";
 
 export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to your Beacon account.",
+  title: "Login",
+  description: "Login to your Beacon account.",
 };
 
 const LoginPage = () => (
