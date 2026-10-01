@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const USERNAME_REGEX = /^[a-z0-9_-]+$/u;
+import {
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_REGEX,
+} from "./constants";
 
 export const loginSchema = z.object({
   identifier: z
@@ -18,15 +22,19 @@ export const signupSchema = z.object({
   username: z
     .string()
     .trim()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be at most 30 characters")
+    .min(
+      USERNAME_MIN_LENGTH,
+      `Username must be at least ${USERNAME_MIN_LENGTH} characters`
+    )
+    .max(
+      USERNAME_MAX_LENGTH,
+      `Username must be at most ${USERNAME_MAX_LENGTH} characters`
+    )
     .regex(
       USERNAME_REGEX,
       "Username can only contain lowercase letters, numbers, underscores, and hyphens"
     ),
   email: z
-    .string()
-    .trim()
     .email("Please enter a valid email address")
     .max(255, "Email is too long"),
   password: z

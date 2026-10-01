@@ -6,6 +6,11 @@ import { username } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { env } from "@/env";
+import {
+  isValidUsername,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "@/features/auth/constants";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -35,10 +40,10 @@ export const auth = betterAuth({
   },
   plugins: [
     username({
-      minUsernameLength: 3,
-      maxUsernameLength: 30,
+      minUsernameLength: USERNAME_MIN_LENGTH,
+      maxUsernameLength: USERNAME_MAX_LENGTH,
       displayUsername: false,
-      usernameValidator: (val) => /^[a-z0-9_-]+$/u.test(val),
+      usernameValidator: isValidUsername,
     }),
     nextCookies(),
   ],
