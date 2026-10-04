@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { getSafeReturnTo } from "@/features/auth/return-to";
 import { loginSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
 import { login } from "@/lib/auth-client";
 
 export const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = getSafeReturnTo(searchParams.get("returnTo"));
   const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useAppForm({
@@ -33,7 +36,7 @@ export const LoginForm = () => {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(returnTo);
       router.refresh();
     },
   });
