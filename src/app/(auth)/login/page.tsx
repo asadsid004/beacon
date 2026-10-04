@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
+import {
+  AuthFormSkeleton,
+  AuthSessionGate,
+} from "@/features/auth/components/auth-session-gate";
 import { LoginForm } from "@/features/auth/components/login-form";
 
 export const metadata: Metadata = {
   title: "Login",
   description: "Login to your Beacon account.",
 };
+
+const currentYear = new Date().getFullYear();
 
 const LoginPage = () => (
   <>
@@ -25,10 +32,14 @@ const LoginPage = () => (
       </Link>
     </header>
 
-    <LoginForm />
+    <Suspense fallback={<AuthFormSkeleton />}>
+      <AuthSessionGate>
+        <LoginForm />
+      </AuthSessionGate>
+    </Suspense>
 
     <footer className="text-muted-foreground text-xs">
-      &copy; {new Date().getFullYear()} Beacon
+      &copy; {currentYear} Beacon
     </footer>
   </>
 );
