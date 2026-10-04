@@ -1,6 +1,7 @@
 import { usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
+import { normalizeUsername } from "@/features/auth/constants";
 import type { LoginInput, SignupInput } from "@/features/auth/validations";
 
 export const authClient = createAuthClient({
@@ -8,7 +9,7 @@ export const authClient = createAuthClient({
 });
 
 export const login = ({ identifier, password }: LoginInput) => {
-  const normalized = identifier.trim().toLowerCase();
+  const normalized = normalizeUsername(identifier);
   const isEmail = normalized.includes("@");
 
   if (isEmail) {
@@ -25,7 +26,7 @@ export const login = ({ identifier, password }: LoginInput) => {
 };
 
 export const signUp = ({ username, email, password }: SignupInput) => {
-  const normalizedUsername = username.trim().toLowerCase();
+  const normalizedUsername = normalizeUsername(username);
   const normalizedEmail = email.trim().toLowerCase();
 
   return authClient.signUp.email({
