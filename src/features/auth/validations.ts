@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  isReservedUsername,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   USERNAME_REGEX,
@@ -22,6 +23,7 @@ export const signupSchema = z.object({
   username: z
     .string()
     .trim()
+    .toLowerCase()
     .min(
       USERNAME_MIN_LENGTH,
       `Username must be at least ${USERNAME_MIN_LENGTH} characters`
@@ -33,7 +35,10 @@ export const signupSchema = z.object({
     .regex(
       USERNAME_REGEX,
       "Username can only contain lowercase letters, numbers, underscores, and hyphens"
-    ),
+    )
+    .refine((value) => !isReservedUsername(value), {
+      message: "This username is reserved",
+    }),
   email: z
     .email("Please enter a valid email address")
     .max(255, "Email is too long"),

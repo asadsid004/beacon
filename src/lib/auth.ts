@@ -7,7 +7,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { env } from "@/env";
 import {
-  isValidUsername,
+  isUsableUsername,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
 } from "@/features/auth/constants";
@@ -43,7 +43,7 @@ export const auth = betterAuth({
       minUsernameLength: USERNAME_MIN_LENGTH,
       maxUsernameLength: USERNAME_MAX_LENGTH,
       displayUsername: false,
-      usernameValidator: isValidUsername,
+      usernameValidator: isUsableUsername,
     }),
     nextCookies(),
   ],
