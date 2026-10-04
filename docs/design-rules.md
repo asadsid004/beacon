@@ -1,147 +1,138 @@
 # Design and layout rules
 
-This document defines layout constraints, application shell structure, responsive rules, and animation standards for Beacon.
+This file owns layout, tokens, viewports, and motion. [PRD](PRD.md) owns product rules, [ROADMAP](ROADMAP.md) owns build order, and [AGENTS](../AGENTS.md) owns fonts and agent workflow.
 
 ## Application shell architecture
 
-The interface uses a single frame across all routes. The top navigation bar and outer container boundary stay in the exact same position on both public feeds and authenticated dashboard pages.
+One frame spans all routes. Top navbar and outer container stay in the same position on public and dashboard pages, so transitions produce zero layout shift.
 
 ### Universal top navigation bar
 
-The root layout (`src/app/layout.tsx`) renders the top navigation bar on every route:
+Root layout at `src/app/layout.tsx` renders the bar on every route.
 
-- Height is fixed at 56 pixels (`h-14`) with a bottom border (`border-b border-zinc-200 dark:border-zinc-800`).
-- The left section contains the Beacon logo and public feed filters (`Hot`, `New`, `Top`, and `Tags`).
-- The right section contains the unread notification bell with count badge, the `+ New post` button, the author karma score in Geist Mono, and the user avatar menu. For anonymous visitors, it displays `Sign in` and `Sign up` buttons.
-- The navigation bar stays mounted and stationary during client-side navigation.
+- Height fixed at 56 pixels with bottom border using `border-b border-border`.
+- Left holds Beacon logo plus public filters Hot, New, Top, Tags.
+- Right holds bell with count badge, `+ New post` button, karma in the [AGENTS metadata font](../AGENTS.md#agent-notes), and avatar menu. Anonymous visitors see Sign in and Sign up.
+- The session-aware user slot sits inside Suspense. It shows karma and avatar after resolving; unresolved state uses a neutral placeholder. [ROADMAP](ROADMAP.md#implementation-phases) owns when the navbar, bell, and New post destination ship.
+- Bar stays mounted during client navigation.
 
 ### Page container boundary
 
-Every route wraps its main content in a shared container:
+Every route wraps main content in one shared container.
 
-- Width caps at `max-w-5xl` (1024 pixels) centered with `mx-auto`.
-- Horizontal padding uses `px-4 sm:px-6`.
-- Because the outer boundary is identical on public and dashboard pages, page transitions produce zero layout shift.
-
----
+- Width caps at `max-w-5xl` centered with `mx-auto`.
+- Horizontal padding `px-4 sm:px-6`.
+- Never expand past `max-w-5xl` on ultrawide. Scale down smoothly with no clipping.
 
 ## Layout modes
 
-### Public feed layout (`/`, `/t/[tag]`, `/p/[id]`)
+### Public feed layout
 
-The public feed renders as a single focused reading column directly within the `max-w-5xl` container. It avoids secondary sidebars or right-rail widgets, keeping attention on links, titles, tags, and comment threads.
+Single focused column inside the shared container for `/`, `/t/[tag]`, and `/p/[id]`. No sidebars or right rails.
 
 ```text
 +-------------------------------------------------------------+
-| [Beacon]  Hot  New  Top  Tags       |  (Bell)  + New post   |  <- Universal navbar (h-14)
+| [Beacon]  Hot  New  Top  Tags       |  (Bell)  + New post   |
 +-------------------------------------------------------------+
-|                                                             |
-| [                max-w-5xl container (1024px)              ] |
-|                                                             |
+| [                max-w-5xl container                        ] |
 | +---------------------------------------------------------+ |
-| | ^  Show HN: A clean Next.js discussion aggregator       | |  <- Single column post card
-| | 34  by mx, 2 hours ago, 14 comments, [nextjs]           | |
+| | Title row with stretched link behavior per PRD          | |
+| | score by author, time, comments, [tag]                  | |
 | +---------------------------------------------------------+ |
-| | ^  Drizzle ORM release notes                            | |
-| | 89  by alex, 5 hours ago, 42 comments, [databases]      | |
-| +---------------------------------------------------------+ |
-|                                                             |
 +-------------------------------------------------------------+
 ```
 
-### Dashboard layout (`/dashboard/*`)
+Feed card links and controls follow [PRD section 4](PRD.md#4-feed-card-and-form-rules). Visitor islands follow the [cache matrix](PRD.md#6-route-caching-and-invalidation-matrix).
 
-The dashboard layout (`src/app/dashboard/layout.tsx`) mounts inside the same root frame. Below the universal top navbar, the `max-w-5xl` container divides into a two-column shell:
+### Dashboard layout
 
-- **Left navigation sidebar:** Uses a fixed width of `w-56` (224 pixels). It lists dashboard sections (`Overview`, `Posts`, `Saved`, `Notifications`, `Settings`). It stays mounted during navigation between dashboard sub-routes.
-- **Main content pane:** Uses the remaining space (`flex-1`, roughly 760 pixels). It renders post lists, post creation forms, bookmark collections, and settings panels.
-- **Mobile and tablet viewports:** On screens narrower than 1024 pixels, the sidebar collapses into a horizontal tab bar or a slide-out sheet.
+`src/app/dashboard/layout.tsx` mounts inside the root frame. Container splits into two columns.
+
+- Left sidebar fixed `w-56`. Lists Overview, Posts, Saved, Notifications, Settings. Stays mounted across dashboard navigation.
+- Main pane uses `flex-1 min-w-0` for lists and forms. Its width is the container's inner width minus sidebar and gap; do not assume a fixed 760 pixels.
+- Mobile under 1024 pixels. Sidebar becomes a horizontal tab bar pinned above content. No slide out sheet. One pattern only.
 
 ```text
 +-------------------------------------------------------------+
-| [Beacon]  Hot  New  Top  Tags       |  (Bell)  + New post   |  <- Universal navbar stays identical
+| [Beacon]  Hot  New  Top  Tags       |  (Bell)  + New post   |
 +-------------------------------------------------------------+
-|                                                             |
-| [                max-w-5xl container (1024px)              ] |
-|                                                             |
+| [                max-w-5xl container                        ] |
 | +-------------+  +----------------------------------------+ |
 | | DASHBOARD   |  | Posts                     [+ New post] | |
-| |             |  |                                        | |
-| | · Overview  |  | [All]  [Published]  [Drafts]           | |
-| | · Posts     |  +----------------------------------------+ |
-| | · Saved     |  | Build an aggregator with Next.js 16.3  | |
-| | · Settings  |  | Published, 14 comments, 34 upvotes     | |
+| | Overview    |  | [All]  [Published]  [Drafts]           | |
+| | Posts       |  | Row per PRD lifecycle                  | |
+| | Saved       |  |                                        | |
+| | Notifs      |  |                                        | |
+| | Settings    |  |                                        | |
 | +-------------+  +----------------------------------------+ |
-|  w-56 (224px)             Content pane (~760px)             |
 +-------------------------------------------------------------+
 ```
-
----
 
 ## Viewport testing requirements
 
-Test all pages across four viewports in browser developer tools:
+This is the full viewport matrix. [AGENTS](../AGENTS.md#layout-and-responsiveness) links here for the task checklist.
 
-1. Mobile: 375 to 430 pixels.
-2. Tablet: 768 to 1024 pixels.
-3. Laptop range: 1280, 1366, 1440, and 1512 pixels.
-4. Large desktop: 1920 pixels and wider.
+1. Mobile 375 to 430.
+2. Tablet 768 to 1024.
+3. Laptop 1280, 1366, 1440, and 1512. This range breaks fixed widths, desktop nav, and font scales most often.
+4. Large desktop 1920 and wider.
 
-Do not stop testing at mobile and wide desktop. The laptop range between 1280 and 1512 pixels is where fixed container widths, desktop navigation, and font scales break.
-
----
+Check heading sizes and line heights at 1366 and 1440. Titles must not wrap to single word lines on laptop widths.
 
 ## Core layout rules
 
-### 1. Fluid container scaling
-- Container boundaries cap at `max-w-5xl` (1024 pixels) with fluid horizontal padding (`px-4 sm:px-6`).
-- Containers must scale down smoothly on narrower screens without clipping borders or text.
-- The dashboard container must never expand past `max-w-5xl` into ultrawide viewports.
+### Fluid container scaling
 
-### 2. Zero horizontal page scroll
-- The document body must never display a horizontal scrollbar at any viewport width.
-- Code blocks and data tables must use local `overflow-x-auto` to isolate wide content.
+Boundaries cap at `max-w-5xl` with fluid padding. Dashboard never exceeds the cap.
 
-### 3. Media boundaries
-- Apply `max-width: 100%` and `height: auto` to all images, videos, and embedded media.
-- Header images render to the full width of their container without causing page overflow.
+### Zero horizontal page scroll
 
-### 4. Mid-range typography check
-- Check heading font sizes and line heights at 1366 and 1440 pixel widths.
-- Ensure titles scale cleanly on laptop viewports without single-word line wraps.
+Body never shows horizontal scroll at any width. Code blocks and tables use local `overflow-x-auto`.
 
----
+### Media boundaries
+
+All images, videos, and embeds use `max-width 100%` and `height auto`. Header images use the rendering and fallback contract in [PRD section 4](PRD.md#4-feed-card-and-form-rules).
 
 ## Color system and tokens
 
-Beacon uses an orange brand accent over neutral backgrounds, configured through shadcn semantic variables in `src/app/globals.css`.
+Orange brand accent over neutral backgrounds, configured through shadcn semantic variables in `src/app/globals.css`.
 
-### Brand primary (Orange)
-- Light mode: `oklch(0.553 0.195 38.402)`
-- Dark mode: `oklch(0.47 0.157 37.304)`
-- Usage: Primary action buttons (`+ New post`, form submissions), active upvote states, active tab indicators, and brand accents.
-- Implementation: Use `bg-primary`, `text-primary-foreground`, and `text-primary`. Do not hardcode raw hex codes or utility classes like `bg-orange-500`.
+### Brand primary
+
+- Light mode `oklch(0.553 0.195 38.402)`.
+- Dark mode `oklch(0.47 0.157 37.304)`.
+- Use `bg-primary`, `text-primary-foreground`, and `text-primary` for primary actions, active votes, active tabs, and brand accents. Never hardcode hex or `bg-orange-500`.
 
 ### Neutral surfaces and text
-- Cards and containers: `bg-card` with `border-border`.
-- Primary copy: `text-foreground`.
-- Metadata, dates, and author usernames: `text-muted-foreground`.
-- Interactive hover states: `hover:bg-accent hover:text-accent-foreground`.
+
+- Cards and containers use `bg-card` with `border-border`.
+- Primary copy uses `text-foreground`.
+- Metadata, dates, and author names use `text-muted-foreground`.
+- Hover states use `hover:bg-accent hover:text-accent-foreground`.
 
 ### Agent rule for styling
-Never hardcode black buttons (`bg-black`, `bg-zinc-900`) or custom hex colors. Always reference semantic shadcn tokens so light and dark modes resolve automatically.
 
----
+Never hardcode black buttons or custom hex values. Always reference semantic tokens so light and dark modes resolve automatically.
 
 ## Animation and transition standards
 
-### 1. Blur reveal transitions
-Page navigations and streaming component reveals use a soft blur fade:
+The following page transitions are allowed in V1. [ROADMAP Phase 7](ROADMAP.md#phase-7-view-transitions) owns implementation timing for all of them. Before that phase, Suspense reveals use skeletons without Crossfade. Micro-interaction exceptions are listed below.
 
-- Entrance keyframes: `opacity` from 0 to 1, `filter: blur(8px)` to `blur(0px)`, and `transform: translateY(6px)` to `translateY(0)`.
-- Exit keyframes: `opacity` from 1 to 0, `filter: blur(0px)` to `blur(6px)`, and `transform: translateY(0)` to `translateY(-4px)`.
-- Timing: 120ms to 160ms for exit, 220ms to 300ms for entrance, using `cubic-bezier(0.16, 1, 0.3, 1)`.
+1. Suspense reveal crossfade. The shared custom `<Crossfade>` wrapper in `src/components/crossfade.tsx` wraps React `<ViewTransition>` around public body and comment reveals. This is project code, not a Next.js export. Import it from `@/components/crossfade`.
+2. Feed reflow on rank change. `<ViewTransition>` around score driven reorder so rows do not jump.
+3. Directional dashboard transition between `/dashboard/posts` and edit form, scoped to content pane only. Sidebar and badge stay outside.
 
-### 2. View transition boundaries
-- Route transitions and streaming reveals run through React View Transitions.
-- External CSS transitions apply only to isolated micro-interactions, such as notification badge pops, dropdown reveals, and tooltip displays.
+### Blur reveal values
+
+Streaming reveals use a soft blur fade.
+
+- Enter from `opacity` 0, `blur(8px)`, `translateY(6px)` to normal over 220 to 300ms with `cubic-bezier(0.16, 1, 0.3, 1)`.
+- Exit to `opacity` 0, `blur(6px)`, `translateY(-4px)` over 120 to 160ms with the same curve.
+- External CSS transitions apply only to micro interactions such as badge pops, dropdowns, and tooltips.
+
+### Accessibility for motion and controls
+
+- Card anchors follow [PRD section 4](PRD.md#4-feed-card-and-form-rules). Their stretch and raised hit areas must preserve distinct accessible names and keyboard focus.
+- Keyboard focus is visible on cards, links, and buttons with standard focus rings. Never remove outlines without a replacement.
+- Vote buttons use `aria-pressed` for active state.
+- Honor `prefers-reduced-motion` by disabling blur and slide transitions.

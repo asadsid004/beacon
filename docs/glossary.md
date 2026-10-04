@@ -1,39 +1,71 @@
 # Domain glossary
 
-This document defines core terms used across Beacon.
+This file owns Beacon's domain definitions. [PRD](PRD.md) owns product rules, and [ROADMAP](ROADMAP.md) owns build order.
+
+## Language
 
 ### Post
-A user submission. A post requires a plain text title and a single tag, with an optional external URL, header image URL, and Markdown body. A post belongs to one author, has a score, and a status (draft or published).
+A submission authored by a user, with a title and tag. It may also contain an external URL, header image URL, and Markdown body.
 
 ### Draft
-A post in draft status. Drafts are private to the author, visible only in the dashboard, and cannot receive votes or comments.
+A post prepared by its author for publication. Its lifecycle and visibility are defined in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
+
+### Published post
+A post its author has made public. Publication and deletion are distinct concepts in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
 
 ### Tag
-A single lowercase text string attached to a post for categorization and feed filtering.
+A topic slug attached to a post. Its format is defined in [PRD section 4](PRD.md#4-feed-card-and-form-rules).
+
+### Link post
+A post with an external URL.
+
+### Text post
+A post without an external URL.
+
+### Title only discussion
+A text post without a body.
 
 ### Comment
-A text response attached to a post or to another comment. Comments allow one level of nesting. A reply to a top-level comment is allowed. A reply to a reply is forbidden.
+A plain text response to a post.
+
+### Top level comment
+A comment that responds directly to a post.
+
+### Reply
+A comment that responds to a top level comment. Thread depth is governed by the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
 
 ### Vote
-An upvote cast by a user on a post or comment. A user can toggle their vote. A second vote removes the vote. Downvotes do not exist.
+An upvote by a user on a post or comment. Vote permissions are defined in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
+
+### Toggle off
+Removal of a user's existing vote on a target.
 
 ### Score
-The total count of upvotes on a post or comment.
+The number of upvotes on one post or comment. Storage and seed exceptions are defined in [PRD section 2](PRD.md#2-data-architecture-and-schema-contracts).
 
 ### Karma
-The cumulative score of an author, stored on the user record. Votes increment or decrement this number directly in the same transaction.
+A user's cumulative total from upvotes received, adjusted for votes toggled off. Its treatment after deletion is defined in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
 
 ### Feed
-A list of published posts, ordered by a sort algorithm (new, top, or hot).
+A public list of posts. Hot, new, and top are feed orderings defined in [PRD section 4](PRD.md#4-feed-card-and-form-rules).
 
 ### Soft delete
-A deletion mode applied to posts that already have comments. The server replaces the post body and author with a deleted placeholder while preserving the comment thread and vote counts.
+Removal of an author's content while preserving the post's discussion thread. The retained fields and permissions are defined in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
 
 ### Unpublish
-Reverting a published post back to draft status. Only allowed when a post has zero comments.
+A transition of a published post back to a draft.
 
 ### Notification
-An alert generated for a user when someone comments on their post or replies to their comment. Upvotes do not create notifications.
+An alert about a comment on a user's post or a reply to their comment. Recipients are defined in [PRD section 3](PRD.md#3-post-lifecycle-and-mutation-rules).
 
 ### Saved post
-A bookmark linking a user to a published post. Stored per user and kept private to the user dashboard.
+A user's private bookmark of a post.
+
+### Visitor
+Anyone viewing Beacon, whether signed in or anonymous.
+
+### User
+A person with a registered Beacon account. A user may be signed in or signed out.
+
+### Author
+The user who created a post or comment. Display after deletion is defined in the [PRD lifecycle matrix](PRD.md#lifecycle-matrix).
