@@ -99,8 +99,8 @@ Orange brand accent over neutral backgrounds, configured through shadcn semantic
 
 ### Brand primary
 
-- Light mode `oklch(0.553 0.195 38.402)`.
-- Dark mode `oklch(0.47 0.157 37.304)`.
+- Light mode `oklch(63.949% 0.19745 37.784)`.
+- Dark mode `oklch(60.256% 0.20938 35.381)`.
 - Use `bg-primary`, `text-primary-foreground`, and `text-primary` for primary actions, active votes, active tabs, and brand accents. Never hardcode hex or `bg-orange-500`.
 
 ### Neutral surfaces and text
