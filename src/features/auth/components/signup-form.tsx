@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { AuthSwitchLink } from "@/features/auth/components/auth-switch-link";
 import { getSafeReturnTo } from "@/features/auth/return-to";
 import { signupSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -13,10 +13,6 @@ export const SignupForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = getSafeReturnTo(searchParams.get("returnTo"));
-  const loginHref =
-    returnTo === "/dashboard"
-      ? "/login"
-      : `/login?returnTo=${encodeURIComponent(returnTo)}`;
   const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useAppForm({
@@ -106,18 +102,20 @@ export const SignupForm = () => {
         </form.AppField>
 
         <form.AppForm>
-          <form.SubmitButton className="mt-2">Create account</form.SubmitButton>
+          <form.SubmitButton className="mt-1.5">
+            Create account
+          </form.SubmitButton>
         </form.AppForm>
       </form>
 
       <p className="text-muted-foreground mt-6 text-center text-sm">
         Already have an account?{" "}
-        <Link
-          href={loginHref}
+        <AuthSwitchLink
+          href="/login"
           className="text-foreground font-medium underline-offset-4 hover:underline"
         >
           Login
-        </Link>
+        </AuthSwitchLink>
       </p>
     </div>
   );
