@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { AuthSwitchLink } from "@/features/auth/components/auth-switch-link";
 import { getSafeReturnTo } from "@/features/auth/return-to";
 import { loginSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -88,18 +88,18 @@ export const LoginForm = () => {
         </form.AppField>
 
         <form.AppForm>
-          <form.SubmitButton className="mt-2">Login</form.SubmitButton>
+          <form.SubmitButton className="mt-1.5">Login</form.SubmitButton>
         </form.AppForm>
       </form>
 
       <p className="text-muted-foreground mt-6 text-center text-sm">
         Don&apos;t have an account?{" "}
-        <Link
+        <AuthSwitchLink
           href="/signup"
           className="text-foreground font-medium underline-offset-4 hover:underline"
         >
           Sign up
-        </Link>
+        </AuthSwitchLink>
       </p>
     </div>
   );

@@ -267,7 +267,7 @@ Run `updateTag` only after a successful transaction, using the captured author u
 | Mark notification read | None | Reconcile optimistic read state, then invalidate the shared TanStack notification query key |
 | Email settings update | None | Refresh the dynamic account display after Better Auth confirms the update |
 
-Auth uses Better Auth's handler rather than a new application action/API. After login, navigate to the validated destination and refresh session-dependent UI. Signup navigates to `/dashboard` and refreshes it. Signout returns to `/`, clears session-specific query state, and refreshes the visitor UI. No public cache tag changes for these auth operations.
+Auth uses Better Auth's handler rather than a new application action/API. After login or signup, navigate to the validated destination and refresh session-dependent UI. The destination defaults to `/dashboard`. Signout returns to `/`, clears session-specific query state, and refreshes the visitor UI. No public cache tag changes for these auth operations.
 
 Prefetching begins on stretched feed links in Phase 1 production. Before partial prefetching, explicit `prefetch={true}` may fetch the full destination. With partial prefetching, the route's shell is shared and explicit prefetch can resolve cached URL-specific body and thread content before navigation. Uncached visitor sections stream behind Suspense. Cached sections may already be ready; do not promise that comments stream on every click. [ROADMAP Phase 3](ROADMAP.md#phase-3-partial-prefetching) tests a controlled slow, cold comments read. Motion is governed by [design rules](design-rules.md#animation-and-transition-standards).
 

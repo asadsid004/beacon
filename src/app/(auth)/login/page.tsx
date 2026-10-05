@@ -6,6 +6,7 @@ import {
   AuthFormSkeleton,
   AuthSessionGate,
 } from "@/features/auth/components/auth-session-gate";
+import { AuthSwitchLink } from "@/features/auth/components/auth-switch-link";
 import { LoginForm } from "@/features/auth/components/login-form";
 
 export const metadata: Metadata = {
@@ -24,12 +25,15 @@ const LoginPage = () => (
       >
         Beacon
       </Link>
-      <Link
-        href="/signup"
-        className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+      <Suspense
+        fallback={
+          <span className="text-muted-foreground text-sm font-medium">
+            Sign up
+          </span>
+        }
       >
-        Sign up
-      </Link>
+        <AuthSwitchLink href="/signup">Sign up</AuthSwitchLink>
+      </Suspense>
     </header>
 
     <Suspense fallback={<AuthFormSkeleton />}>

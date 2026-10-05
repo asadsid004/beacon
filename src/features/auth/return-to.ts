@@ -24,9 +24,16 @@ export const getSafeReturnTo = (value: string | null | undefined): string => {
     return DASHBOARD_PATH;
   }
 
-  if (pathname !== DASHBOARD_PATH && !pathname.startsWith(DASHBOARD_PREFIX)) {
+  const destination = new URL("http://beacon.invalid");
+  destination.pathname = pathname;
+  const normalizedPathname = destination.pathname;
+
+  if (
+    normalizedPathname !== DASHBOARD_PATH &&
+    !normalizedPathname.startsWith(DASHBOARD_PREFIX)
+  ) {
     return DASHBOARD_PATH;
   }
 
-  return `${pathname}${query}`;
+  return `${normalizedPathname}${query}`;
 };
