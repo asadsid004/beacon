@@ -13,6 +13,10 @@ export const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = getSafeReturnTo(searchParams.get("returnTo"));
+  const signupHref =
+    returnTo === "/dashboard"
+      ? "/signup"
+      : `/signup?returnTo=${encodeURIComponent(returnTo)}`;
   const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useAppForm({
@@ -95,7 +99,7 @@ export const LoginForm = () => {
       <p className="text-muted-foreground mt-6 text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href={signupHref}
           className="text-foreground font-medium underline-offset-4 hover:underline"
         >
           Sign up

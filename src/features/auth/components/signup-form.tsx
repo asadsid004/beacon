@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { getSafeReturnTo } from "@/features/auth/return-to";
 import { signupSchema } from "@/features/auth/validations";
 import { useAppForm } from "@/hooks/use-app-form";
 import { signUp } from "@/lib/auth-client";
 
 export const SignupForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = getSafeReturnTo(searchParams.get("returnTo"));
+  const loginHref =
+    returnTo === "/dashboard"
+      ? "/login"
+      : `/login?returnTo=${encodeURIComponent(returnTo)}`;
   const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useAppForm({
@@ -106,7 +113,7 @@ export const SignupForm = () => {
       <p className="text-muted-foreground mt-6 text-center text-sm">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={loginHref}
           className="text-foreground font-medium underline-offset-4 hover:underline"
         >
           Login
