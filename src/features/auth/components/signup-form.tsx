@@ -42,7 +42,7 @@ export const SignupForm = () => {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(returnTo);
       router.refresh();
     },
   });
