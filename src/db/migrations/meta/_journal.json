@@ -15,6 +15,13 @@
       "when": 1791126123027,
       "tag": "0001_strange_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791308487048,
+      "tag": "0002_tricky_electro",
+      "breakpoints": true
     }
   ]
 }
