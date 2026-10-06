@@ -8,8 +8,16 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: beacon
       PGDATA: /var/lib/postgresql/data
+      TZ: UTC
+      PGTZ: UTC
     ports:
-      - "5432:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d beacon"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

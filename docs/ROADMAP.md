@@ -125,7 +125,11 @@ Exit. All required tests pass locally and in CI. Every matrix refresh matches so
 
 ## CI setup from Phase 1
 
-Use a Postgres 17 service container locally and in CI with a health check. CI uses an isolated fixture database and UTC timezone. It does not connect to production Neon. Configure `DATABASE_URL`, a test-only Better Auth secret, and `BETTER_AUTH_URL` matching the production test server, normally `http://localhost:3000`. Capture one current UTC `SEED_REFERENCE_TIME` before seeding and retain it in the run manifest, as specified in the [seed contract](PRD.md#seed-contract-and-named-fixtures). Reusing that value reproduces the fixture timestamps exactly.
+Use a Postgres 18 service container locally and in CI with a health check. CI uses an isolated fixture database and UTC timezone. It does not connect to production Neon. Configure `DATABASE_URL`, a test-only Better Auth secret, and `BETTER_AUTH_URL` matching the production test server, normally `http://localhost:3000`. Capture one current UTC `SEED_REFERENCE_TIME` before seeding and retain it in the run manifest, as specified in the [seed contract](PRD.md#seed-contract-and-named-fixtures). Reusing that value reproduces the fixture timestamps exactly.
+
+Production uses Neon. Development and tests use the existing Postgres container. Tests use `beacon_fixture`, a separate database with resettable sample data.
+
+Start it with `docker compose up -d --wait postgres`; `--wait` waits until Postgres is ready. Create the test database once with `docker compose exec -T postgres createdb -U postgres beacon_fixture`. For the test run, set `DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/beacon_fixture` and use the test auth settings above. If port 5432 is occupied, set `POSTGRES_PORT` to a free port and use that port in `DATABASE_URL`.
 
 Run CI in this order:
 

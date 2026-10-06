@@ -61,8 +61,10 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 3. (Optional) Start local PostgreSQL with Docker:
 
    ```bash
-   docker compose up -d
+   docker compose up -d --wait postgres
    ```
+
+   Production uses Neon. Development uses this container; tests use a separate database with resettable sample data. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
 
 4. Start the development server:
    ```bash
