@@ -133,6 +133,8 @@ Start it with `docker compose up -d --wait postgres`; `--wait` waits until Postg
 
 Run CI in this order:
 
+Run `bun run db:seed` with `FIXTURE_DATABASE_URL` set to the same value as the test `DATABASE_URL`. The command only accepts the local or CI `beacon_fixture` database and refuses production. It writes fixture IDs and the reference time to `.fixtures/manifest.json`. Reruns replace domain fixtures and preserve auth users.
+
 1. Install with `bun install --frozen-lockfile` and install Playwright Chromium plus its Linux system dependencies.
 2. Wait for Postgres health, then run migrations with `bun run db:migrate` and seed with `bun run db:seed`.
 3. Run check, typegen/typecheck, scoped React Doctor, and production build using the [AGENTS verification commands](../AGENTS.md#task-verification-checklist). Builds may query the fixture database.
