@@ -80,6 +80,7 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 - `bun run fix`: Automatically formats code and fixes lint issues.
 - `bun run doctor`: Runs React Doctor component diagnostic audit.
 - `bun run db:seed`: Seeds the configured fixture database. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
+- `bun run test:e2e`: Runs Chromium tests against the production build. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
 
 ## Project structure
 

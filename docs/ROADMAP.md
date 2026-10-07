@@ -138,10 +138,12 @@ Run `bun run db:seed` with `FIXTURE_DATABASE_URL` set to the same value as the t
 1. Install with `bun install --frozen-lockfile` and install Playwright Chromium plus its Linux system dependencies.
 2. Wait for Postgres health, then run migrations with `bun run db:migrate` and seed with `bun run db:seed`.
 3. Run check, typegen/typecheck, scoped React Doctor, and production build using the [AGENTS verification commands](../AGENTS.md#task-verification-checklist). Builds may query the fixture database.
-4. Start the built app with `bun start`, wait for readiness, and run `bun run test:e2e` against that server. Playwright retains traces on failure.
-5. Stop the server and database/test transactions during cleanup.
+4. Run `bun run test:e2e`. Playwright starts the built app with `bun start`, waits for readiness, and retains traces on failure. It stops the server after the run.
+5. Clean up database/test transactions after the run.
 
 The same migrate, seed, build, start, and test order applies locally. Playwright and its browser setup ship in Phase 1, rather than waiting for Phase 2. `@next/playwright` ships with the runner setup and its `instant()` helper first appears in Phase 3 timing coverage.
+
+Install Chromium locally with `bun x playwright install chromium`. Keep the fixture database environment set through migrate, seed, build, and `bun run test:e2e`. Playwright requires matching `DATABASE_URL` and `FIXTURE_DATABASE_URL` and a free application port, defaulting to 3000. Set `PORT` to use another port; the test server's auth URL follows it. Do not start a separate app server before the test command.
 
 ## Workflow discipline
 

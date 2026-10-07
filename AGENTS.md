@@ -23,8 +23,6 @@ This file owns commands, folder layout, fonts, and agent workflow. The linked do
 - `bun run db:push`: Push schema directly, local only.
 - `bun run db:studio`: Open Drizzle Studio.
 
-Planned commands, added in [Phase 1](docs/ROADMAP.md#phase-1-public-pages-without-caching). They are not present in the completed Phase 0 package scripts yet.
-
 - `bun run db:seed`: Seed the [PRD fixtures](docs/PRD.md#seed-contract-and-named-fixtures).
 - `bun run test:e2e`: Run Playwright against the built app and real fixture database.
 
