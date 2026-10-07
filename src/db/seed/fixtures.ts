@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { posts } from "../schema";
+import type { comments, posts } from "../schema";
 
 export const FIXTURE_PASSWORD = "Beacon-fixture-2026!";
 export const FIXTURE_USERNAMES = ["alice", "bob", "charlie"] as const;
@@ -8,9 +8,10 @@ export type FixtureUsername = (typeof FIXTURE_USERNAMES)[number];
 export type FixtureUsers = Record<FixtureUsername, string>;
 export const GENERATOR_SEED = "beacon-v1";
 
-export const createGenerator = () => {
+export const createGenerator = (stream = "") => {
   let state = createHash("sha256")
     .update(GENERATOR_SEED)
+    .update(stream)
     .digest()
     .readUInt32BE(0);
   return () => {
@@ -104,5 +105,72 @@ export const createPostFixtures = (
     deletedAt: ago(1),
     body: "This post was deleted by the author.",
   });
+  return fixtures;
+};
+
+type CommentFixture = typeof comments.$inferInsert & {
+  name: string;
+};
+
+export const createCommentFixtures = (
+  users: FixtureUsers,
+  postFixtures: ReturnType<typeof createPostFixtures>
+) => {
+  const random = createGenerator("comments");
+  const fixtures: CommentFixture[] = [];
+  const post = (name: string) => {
+    const match = postFixtures.find((fixture) => fixture.name === name);
+    if (!match?.id || !match.publishedAt) {
+      throw new Error(`Missing published post fixture: ${name}`);
+    }
+    return { id: match.id, publishedAt: match.publishedAt };
+  };
+  const thread = post("thread-post");
+  for (let index = 0; index < 21; index += 1) {
+    fixtures.push({
+      name: `thread-${index + 1}`,
+      id: fixtureId(random),
+      postId: thread.id,
+      authorId: users.bob,
+      parentCommentId: null,
+      body: `Top level comment ${index + 1}. Plain text: **not Markdown**.`,
+      score: 2,
+      createdAt: new Date(thread.publishedAt.getTime() + (index + 1) * 60_000),
+    });
+  }
+  fixtures[0].name = "thread-first";
+  fixtures[20].name = "thread-last";
+  for (const [name, parentName] of [
+    ["reply-first", "thread-first"],
+    ["reply-last", "thread-last"],
+  ]) {
+    const parent = fixtures.find((fixture) => fixture.name === parentName);
+    if (!parent?.id || !parent.createdAt) {
+      throw new Error(`Missing parent fixture: ${parentName}`);
+    }
+    fixtures.push({
+      name,
+      id: fixtureId(random),
+      postId: thread.id,
+      authorId: users.alice,
+      parentCommentId: parent.id,
+      body: `Reply to ${parentName}.`,
+      score: 1,
+      createdAt: new Date(parent.createdAt.getTime() + 30_000),
+    });
+  }
+  for (const name of ["lifecycle-thread", "deleted-thread"]) {
+    const owner = post(name);
+    fixtures.push({
+      name: `${name}-comment`,
+      id: fixtureId(random),
+      postId: owner.id,
+      authorId: users.bob,
+      parentCommentId: null,
+      body: "This discussion remains readable.",
+      score: 3,
+      createdAt: new Date(owner.publishedAt.getTime() + 60_000),
+    });
+  }
   return fixtures;
 };
