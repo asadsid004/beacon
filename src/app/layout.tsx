@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Inter } from "next/font/google";
 
 import "./globals.css";
+import { QueryProvider } from "@/components/query-provider";
 import { cn } from "@/lib/utils";
 
 const dmSans = DM_Sans({
@@ -38,7 +39,9 @@ const RootLayout = ({ children }: LayoutProps<"/">) => (
       geistMono.variable
     )}
   >
-    <body className="flex min-h-full flex-col font-sans">{children}</body>
+    <body className="flex min-h-full flex-col font-sans">
+      <QueryProvider>{children}</QueryProvider>
+    </body>
   </html>
 );
 
