@@ -6,7 +6,7 @@ test("the production app renders without browser errors", async ({ page }) => {
 
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Beacon", exact: true })
+    page.getByRole("heading", { name: "Posts", exact: true })
   ).toBeVisible();
   await page.goto("/login");
   await expect(
