@@ -110,8 +110,7 @@ export const AuthShowcasePanel = () => (
     className="border-primary bg-auth-showcase relative flex h-full w-full flex-col overflow-hidden rounded-3xl border p-12 pr-0 shadow-sm select-none"
   >
     <div className="shrink-0">
-      {/* oxlint-disable-next-line shadcn/no-arbitrary-values */}
-      <h2 className="font-heading text-primary-foreground text-[clamp(2rem,4vw,4rem)] leading-tight font-semibold tracking-tight">
+      <h2 className="font-heading text-primary-foreground text-auth-showcase leading-tight font-semibold tracking-tight">
         <span className="block">Read a thread.</span>
         <span className="block">Share a thought.</span>
       </h2>

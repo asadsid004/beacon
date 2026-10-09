@@ -8,9 +8,27 @@ test("the production app renders without browser errors", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Posts", exact: true })
   ).toBeVisible();
-  await page.goto("/login");
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Sign in", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Welcome back" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(0);
+  await page
+    .getByRole("link", { name: "Sign up", exact: true })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/signup$/u);
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "Beacon", exact: true }).click();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Open Tanstack query devtools" })

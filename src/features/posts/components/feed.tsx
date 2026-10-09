@@ -12,8 +12,6 @@ import { PostCard } from "./post-card";
 
 const sortLabels = { hot: "Hot", new: "New", top: "Top" };
 
-// Async Server Component: public reads run at request time until Phase 2 caching.
-// oxlint-disable-next-line react-doctor/only-export-components
 export const Feed = async ({
   sort,
   page,

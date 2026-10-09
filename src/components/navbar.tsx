@@ -20,17 +20,9 @@ export const Navbar = () => (
         <Link
           href="/"
           aria-label="Beacon home"
-          className="focus-visible:ring-ring flex shrink-0 items-center gap-2 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="font-heading text-primary focus-visible:ring-ring shrink-0 rounded-sm text-lg font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:text-2xl"
         >
-          <span
-            aria-hidden="true"
-            className="bg-primary text-primary-foreground font-heading flex size-6 items-center justify-center rounded-md text-sm font-bold"
-          >
-            b
-          </span>
-          <span className="font-heading hidden text-lg font-semibold tracking-tight sm:inline">
-            Beacon
-          </span>
+          Beacon
         </Link>
         <nav
           aria-label="Main navigation"

@@ -4,11 +4,11 @@ This file owns layout, tokens, viewports, and motion. [PRD](PRD.md) owns product
 
 ## Application shell architecture
 
-One frame spans all routes. Top navbar and outer container stay in the same position on public and dashboard pages, so transitions produce zero layout shift.
+Public and dashboard pages share a frame. Top navbar and outer container stay in the same position across those pages. Auth pages use their own layout without the navbar.
 
 ### Universal top navigation bar
 
-Root layout at `src/app/layout.tsx` renders the bar on every route.
+The shared layout at `src/app/(main)/layout.tsx` renders the bar on public and dashboard routes. Login and signup stay in `src/app/(auth)/`.
 
 - Height fixed at 56 pixels with bottom border using `border-b border-border`.
 - Left holds Beacon logo plus public filters Hot, New, Top, Tags.

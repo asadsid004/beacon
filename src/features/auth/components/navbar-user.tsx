@@ -5,8 +5,6 @@ import { UserMenu } from "./user-menu";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 
-// Async Server Component: resolves the session inside the navbar's Suspense slot.
-// oxlint-disable-next-line react-doctor/only-export-components
 export const NavbarUser = async () => {
   const user = await getCurrentUser();
   if (!user) {

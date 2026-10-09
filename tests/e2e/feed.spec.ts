@@ -44,6 +44,9 @@ test("feed URLs normalize defaults and reject out-of-range pages", async ({
   const response = await page.goto("/?page=4");
   expect(response?.status()).toBe(404);
   await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(1);
+  await expect(
     page.getByRole("heading", { name: "Page not found" })
   ).toBeVisible();
 });

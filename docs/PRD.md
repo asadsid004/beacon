@@ -47,7 +47,7 @@ These stories describe scope. The sections below own the operative rules; the [g
 33. As an author, I want deleting a published post with comments to mark the post as deleted without removing the comment tree, so that other users do not lose their discussion history.
 34. As an author, I want to keep my earned karma when a post is deleted, so that my historical standing remains intact.
 35. As an author, I want to receive a notification when someone comments on my post or replies to my comment, so that I can stay informed of replies.
-36. As an author, I want to view my unread notification count in the root navbar bell, so that I know when new activity arrives on any route.
+36. As an author, I want to view my unread notification count in the shared navbar bell, so that I know when new activity arrives on public and dashboard routes.
 37. As an author, I want to view and mark notifications as read at `/dashboard/notifications`, single only, so that I can clear handled alerts.
 38. As an author, I want my notification list to poll in the background without refreshing the page, so that I see new responses quickly.
 39. As a user, I want navigating between dashboard routes to preserve the dashboard layout and notification state, so that switching sections is fast and free of layout shifts.
@@ -276,7 +276,7 @@ V1 uses the default per-instance memory cache with no shared handler. Before sca
 ### 7. Dashboard architecture and persistent shell
 
 - `QueryClientProvider` lives in the root layout with a stable browser QueryClient, so navbar and dashboard consumers share it. [ROADMAP](ROADMAP.md#phase-1-public-pages-without-caching) assigns installation and mounting.
-- Root navbar owns the bell and unread count. Dashboard layout adds only its sidebar and content pane. Layout and transition boundaries live in [design rules](design-rules.md).
+- The shared public and dashboard navbar owns the bell and unread count. Auth pages have no navbar. Dashboard layout adds only its sidebar and content pane. Layout and transition boundaries live in [design rules](design-rules.md).
 - `getNotifications` returns the active list page plus total unread count. Bell and list share one query-key family, one active-page query, and one poll. Poll only when signed in, every 15 seconds, pause in background tabs, and keep requests single-flight. The key includes user ID and page; mark-read invalidates that user's notification key family so all cached pages refresh. Clear it on signout or account change.
 - Preload on the server through `getNotifications`, pass through `HydrationBoundary`, and use `useSuspenseQuery` with the Server Action as `queryFn`. This session-aware read is the explicit client polling exception to Server Component reads; it creates no application API route.
 - Optimistic feedback is limited to vote, save, and mark-read. Use `useOptimistic` inside `useTransition`, reconcile with committed results, and roll back failures. Publish, unpublish, and delete wait for the server and navigate on success.

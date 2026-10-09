@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Inter } from "next/font/google";
 
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
 import { QueryProvider } from "@/components/query-provider";
 import { cn } from "@/lib/utils";
 
@@ -41,10 +40,7 @@ const RootLayout = ({ children }: LayoutProps<"/">) => (
     )}
   >
     <body className="flex min-h-full flex-col font-sans">
-      <QueryProvider>
-        <Navbar />
-        {children}
-      </QueryProvider>
+      <QueryProvider>{children}</QueryProvider>
     </body>
   </html>
 );
