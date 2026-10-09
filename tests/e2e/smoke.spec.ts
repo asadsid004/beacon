@@ -35,3 +35,20 @@ test("the production app renders without browser errors", async ({ page }) => {
   ).toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+test("unmatched routes keep one navbar and a working return link", async ({
+  page,
+}) => {
+  const response = await page.goto("/missing-page");
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { name: "Page not found" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(1);
+  await page.getByRole("link", { name: "Browse posts" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Posts", exact: true })
+  ).toBeVisible();
+});
