@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { Pagination } from "@/components/pagination";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 import { FEED_SORTS, getFeedHref } from "../feed-params";
 import type { FeedSort } from "../feed-params";
@@ -28,19 +28,21 @@ export const Feed = async ({
     <>
       <nav aria-label="Sort posts" className="mb-6 flex gap-1 border-b pb-3">
         {FEED_SORTS.map((value) => (
-          <Link
+          <Button
             key={value}
-            href={getFeedHref({ sort: value })}
-            aria-current={sort === value ? "page" : undefined}
-            className={cn(
-              "focus-visible:ring-ring rounded-md px-3 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-              sort === value
-                ? "bg-secondary text-secondary-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground"
-            )}
+            variant={sort === value ? "secondary" : "ghost"}
+            size="lg"
+            nativeButton={false}
+            {...{ role: "link" }}
+            render={
+              <Link
+                href={getFeedHref({ sort: value })}
+                aria-current={sort === value ? "page" : undefined}
+              />
+            }
           >
             {sortLabels[value]}
-          </Link>
+          </Button>
         ))}
       </nav>
       {feed.posts.length > 0 ? (

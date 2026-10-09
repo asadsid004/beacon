@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
+
 import { getCurrentUser } from "../queries";
 import { UserMenu } from "./user-menu";
 
@@ -16,12 +18,14 @@ export const NavbarUser = async () => {
         >
           Sign in
         </Link>
-        <Link
-          href="/signup"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring rounded-md px-2 py-2 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:px-3"
+        <Button
+          size="lg"
+          nativeButton={false}
+          {...{ role: "link" }}
+          render={<Link href="/signup" />}
         >
           Sign up
-        </Link>
+        </Button>
       </div>
     );
   }

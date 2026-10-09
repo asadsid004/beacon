@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   NavbarUser,
   NavbarUserSkeleton,
@@ -29,13 +30,16 @@ export const Navbar = () => (
           className="flex items-center gap-0.5 sm:gap-2"
         >
           {links.map(({ label, href }) => (
-            <Link
+            <Button
               key={label}
-              href={href}
-              className="text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:ring-ring rounded-md px-1.5 py-2 text-xs outline-none focus-visible:ring-2 sm:px-2 sm:text-sm"
+              variant="ghost"
+              size="lg"
+              nativeButton={false}
+              {...{ role: "link" }}
+              render={<Link href={href} />}
             >
               {label}
-            </Link>
+            </Button>
           ))}
         </nav>
       </div>
