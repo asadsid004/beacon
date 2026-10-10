@@ -88,3 +88,22 @@ test("mobile navigation keeps filters and auth controls in separate rows", async
   const header = await page.locator("header").boundingBox();
   expect(header?.y).toBe(0);
 });
+
+for (const [requested, expected] of [
+  ["https://example.com/", "/dashboard"],
+  ["//example.com/", "/dashboard"],
+  ["/dashboard/../login", "/dashboard"],
+  ["/dashboard/posts?sort=new", "/dashboard/posts?sort=new"],
+]) {
+  test(`auth switching validates return path ${requested}`, async ({
+    page,
+  }) => {
+    await page.goto(`/login?returnTo=${encodeURIComponent(requested)}`);
+    await expect(
+      page.getByRole("link", { name: "Sign up", exact: true }).first()
+    ).toHaveAttribute(
+      "href",
+      `/signup?returnTo=${encodeURIComponent(expected)}`
+    );
+  });
+}
