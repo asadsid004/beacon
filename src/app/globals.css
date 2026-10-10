@@ -163,3 +163,21 @@
       color-mix(in oklch, var(--primary), black 35%)
     );
 }
+
+html {
+  scrollbar-gutter: stable;
+  scroll-padding-top: 6rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 4.5rem;
+  }
+}
+
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

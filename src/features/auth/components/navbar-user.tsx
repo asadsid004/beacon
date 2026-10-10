@@ -11,13 +11,16 @@ export const NavbarUser = async () => {
   const user = await getCurrentUser();
   if (!user) {
     return (
-      <div className="flex w-28 shrink-0 items-center justify-end gap-2 text-xs sm:w-40 sm:gap-3 sm:text-sm">
-        <Link
-          href="/login"
-          className="focus-visible:ring-ring rounded-sm outline-none hover:underline focus-visible:ring-2"
+      <div className="flex w-36 shrink-0 items-center justify-end gap-2 text-xs sm:gap-3 sm:text-sm">
+        <Button
+          variant="outline"
+          size="lg"
+          nativeButton={false}
+          {...{ role: "link" }}
+          render={<Link href="/login" />}
         >
-          Sign in
-        </Link>
+          Log in
+        </Button>
         <Button
           size="lg"
           nativeButton={false}
@@ -30,7 +33,7 @@ export const NavbarUser = async () => {
     );
   }
   return (
-    <div className="flex w-28 shrink-0 items-center justify-end gap-2 sm:w-40 sm:gap-3">
+    <div className="flex w-36 shrink-0 items-center justify-end gap-2 sm:gap-3">
       <span className="text-muted-foreground font-mono text-xs tabular-nums">
         {numberFormat.format(user.karma)}
         <span className="sr-only"> karma</span>
@@ -43,7 +46,7 @@ export const NavbarUser = async () => {
 export const NavbarUserSkeleton = () => (
   <div
     aria-hidden="true"
-    className="flex w-28 shrink-0 items-center justify-end gap-2 sm:w-40 sm:gap-3"
+    className="flex w-36 shrink-0 items-center justify-end gap-2 sm:gap-3"
   >
     <div className="bg-muted h-4 w-12 rounded-sm motion-safe:animate-pulse" />
     <div className="bg-muted size-8 rounded-full motion-safe:animate-pulse" />

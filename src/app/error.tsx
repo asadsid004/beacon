@@ -10,7 +10,7 @@ const PageError = ({ retry }: { retry: () => void }) => (
     <p className="text-muted-foreground mt-3 text-sm">
       Try again to reload the page.
     </p>
-    <Button onClick={retry} variant="outline" className="mt-6">
+    <Button size="lg" onClick={retry} variant="outline" className="mt-6">
       Try again
     </Button>
   </main>

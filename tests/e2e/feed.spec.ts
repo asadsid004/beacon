@@ -10,7 +10,7 @@ for (const sort of ["hot", "new", "top"] as const) {
     page,
   }) => {
     await page.goto(sort === "hot" ? "/" : `/?sort=${sort}`);
-    const sortNav = page.getByRole("navigation", { name: "Sort posts" });
+    const sortNav = page.getByRole("navigation", { name: "Main navigation" });
     await expect(sortNav.locator('[aria-current="page"]')).toHaveText(
       { hot: "Hot", new: "New", top: "Top" }[sort]
     );
@@ -59,7 +59,7 @@ for (const value of ["0", "-1", "1.5", "invalid"]) {
     await expect(page.locator("article")).toHaveCount(20);
     await expect(
       page
-        .getByRole("navigation", { name: "Sort posts" })
+        .getByRole("navigation", { name: "Main navigation" })
         .locator('[aria-current="page"]')
     ).toHaveText("Hot");
     await expect(

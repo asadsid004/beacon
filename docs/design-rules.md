@@ -10,10 +10,11 @@ Public and dashboard pages share a frame. Top navbar and outer container stay in
 
 The shared layout at `src/app/(main)/layout.tsx` renders the bar on public and dashboard routes. Login and signup stay in `src/app/(auth)/`.
 
-- Height fixed at 56 pixels with bottom border using `border-b border-border`.
-- Left holds Beacon logo plus public filters Hot, New, Top, Tags.
-- Right holds bell with count badge, `+ New post` button, karma in the [AGENTS metadata font](../AGENTS.md#agent-notes), and avatar menu. Anonymous visitors see Sign in and Sign up.
+- Sticky at the top with `border-b border-border`. Desktop height is 56 pixels. Below 768 pixels, the logo and account controls occupy a compact 44-pixel row, with filters in a second row.
+- Left holds the Beacon logo. From 768 pixels, Hot/New/Top/Tags fill the 56-pixel row, right-aligned between the logo and action group. Below that width, left-aligned filters occupy a separate 44-pixel row under the logo and actions. Use flex order classes and one FeedTabs instance for both layouts, with one bottom border on the header.
+- Right holds bell with count badge, `+ New post` button, karma in the [AGENTS metadata font](../AGENTS.md#agent-notes), and avatar menu. Anonymous visitors see an outlined Log in button and a primary Sign up button.
 - The session-aware user slot sits inside Suspense. It shows karma and avatar after resolving; unresolved state uses a neutral placeholder. [ROADMAP](ROADMAP.md#implementation-phases) owns when the navbar, bell, and New post destination ship.
+- Filters use underline tabs with muted inactive text, foreground active text, and a 2-pixel primary indicator. Keep text size and weight fixed, transition only colors, and scroll overflow inside the nav with a hidden scrollbar.
 - Bar stays mounted during client navigation.
 
 ### Page container boundary
@@ -85,7 +86,11 @@ Check heading sizes and line heights at 1366 and 1440. Titles must not wrap to s
 
 Boundaries cap at `max-w-5xl` with fluid padding. Dashboard never exceeds the cap.
 
+The navbar owns Hot/New/Top sorting and marks the current filter with `aria-current="page"`. Do not repeat these controls below the feed heading. When tag sorting ships, preserve the selected tag when changing sort.
+
 ### Zero horizontal page scroll
+
+Reserve scrollbar space on `html` with `scrollbar-gutter: stable` so short and long pages keep the same horizontal alignment. Set document scroll padding for the sticky header so focused controls stay visible.
 
 Body never shows horizontal scroll at any width. Code blocks and tables use local `overflow-x-auto`.
 

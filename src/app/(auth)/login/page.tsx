@@ -21,7 +21,7 @@ const LoginPage = () => (
     <header className="flex items-center justify-between">
       <Link
         href="/"
-        className="font-heading text-primary text-3xl font-semibold tracking-tight"
+        className="font-heading text-primary text-3xl font-bold tracking-tight"
       >
         Beacon
       </Link>
