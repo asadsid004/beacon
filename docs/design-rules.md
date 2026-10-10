@@ -105,6 +105,7 @@ Use explicit sizes on the shared `Button` component:
 - Form action buttons use `size="xl"`, matching the form input height.
 - Other text buttons use `size="lg"`.
 - Icon-only buttons use `size="icon"`.
+- Feed vote buttons use `size="vote"` for a stacked arrow and score.
 
 Do not override button height, padding, or font size with classes. Navigation tabs follow the navbar's 44-pixel mobile and 56-pixel desktop heights rather than button sizes. Regular text links remain links.
 

@@ -23,13 +23,13 @@ export const Feed = async ({
   return (
     <>
       {feed.posts.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-6">
           {feed.posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </div>
       ) : (
-        <div className="rounded-lg border px-6 py-12 text-center">
+        <div className="py-12">
           <h2 className="font-heading text-lg font-semibold">No posts yet</h2>
           <p className="text-muted-foreground mt-2 text-sm">
             Published posts will appear here.
@@ -52,11 +52,16 @@ export const FeedSkeleton = () => (
   <div>
     <output className="sr-only">Loading posts…</output>
     <div aria-hidden="true" className="motion-safe:animate-pulse">
-      <div className="space-y-3">
+      <div className="space-y-6">
         {["first", "second", "third", "fourth", "fifth"].map((key) => (
-          <div key={key} className="rounded-lg border p-4 sm:p-5">
-            <div className="bg-muted h-6 w-3/4 rounded-sm" />
-            <div className="bg-muted mt-3 h-4 w-1/2 rounded-sm" />
+          <div key={key} className="flex gap-3 sm:gap-4">
+            <div className="flex w-12 shrink-0 flex-col items-center gap-1">
+              <div className="bg-muted h-14 w-12 rounded-lg" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="bg-muted h-6 w-3/4 rounded-sm" />
+              <div className="bg-muted mt-1 h-6 w-1/2 rounded-sm" />
+            </div>
           </div>
         ))}
       </div>
