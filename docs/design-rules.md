@@ -98,6 +98,16 @@ Body never shows horizontal scroll at any width. Code blocks and tables use loca
 
 All images, videos, and embeds use `max-width 100%` and `height auto`. Header images use the rendering and fallback contract in [PRD section 4](PRD.md#4-feed-card-and-form-rules).
 
+## Button sizes
+
+Use explicit sizes on the shared `Button` component:
+
+- Form action buttons use `size="xl"`, matching the form input height.
+- Other text buttons use `size="lg"`.
+- Icon-only buttons use `size="icon"`.
+
+Do not override button height, padding, or font size with classes. Navigation tabs follow the navbar's 44-pixel mobile and 56-pixel desktop heights rather than button sizes. Regular text links remain links.
+
 ## Color system and tokens
 
 Orange brand accent over neutral backgrounds, configured through shadcn semantic variables in `src/app/globals.css`.
