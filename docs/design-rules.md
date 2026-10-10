@@ -90,7 +90,7 @@ The navbar owns Hot/New/Top sorting and marks the current filter with `aria-curr
 
 ### Zero horizontal page scroll
 
-Reserve scrollbar space on `html` with `scrollbar-gutter: stable` so short and long pages keep the same horizontal alignment. Set document scroll padding for the sticky header so focused controls stay visible.
+Keep a vertical scrollbar on `html` with `overflow-y: scroll` so short and long pages keep the same horizontal alignment without an empty reserved gutter. Set document scroll padding for the sticky header so focused controls stay visible.
 
 Body never shows horizontal scroll at any width. Code blocks and tables use local `overflow-x-auto`.
 

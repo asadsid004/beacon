@@ -165,7 +165,7 @@
 }
 
 html {
-  scrollbar-gutter: stable;
+  overflow-y: scroll;
   scroll-padding-top: 6rem;
 }
 
