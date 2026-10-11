@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
 import type { FeedPost } from "../queries";
 
 const numberFormat = new Intl.NumberFormat("en-US");
+const compactNumberFormat = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
 const pluralRules = new Intl.PluralRules("en-US");
 const externalRel = "noopener noreferrer nofollow ugc";
 const stretchedLink =
@@ -34,6 +38,7 @@ export const PostCard = ({ post }: { post: FeedPost }) => {
           variant="vote"
           size="vote"
           disabled
+          title={`${numberFormat.format(post.score)} upvotes`}
           aria-label={`Upvote ${post.title}, score ${numberFormat.format(post.score)}, available in a later release`}
         >
           <HugeiconsIcon
@@ -42,50 +47,54 @@ export const PostCard = ({ post }: { post: FeedPost }) => {
             className="size-5"
             aria-hidden="true"
           />
-          <span className="font-mono text-sm tabular-nums">
-            {numberFormat.format(post.score)}
+          <span className="text-xs tabular-nums">
+            {compactNumberFormat.format(post.score)}
           </span>
         </Button>
       </div>
       <div className="min-w-0 flex-1">
-        <h2 className="text-lg leading-normal font-medium wrap-anywhere">
-          {post.url ? (
+        <div className="leading-normal">
+          <h2 className="inline text-lg leading-normal font-medium wrap-anywhere">
+            {post.url ? (
+              <a
+                className={cn(raisedLink, "underline-offset-4 hover:underline")}
+                href={post.url}
+                target="_blank"
+                rel={externalRel}
+              >
+                {post.title}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            ) : (
+              <Link className={stretchedLink} href={href} prefetch={true}>
+                {post.title}
+              </Link>
+            )}
+          </h2>
+          {post.url && hostname && (
             <a
-              className={cn(raisedLink, "underline-offset-4 hover:underline")}
+              className={cn(
+                raisedLink,
+                "text-muted-foreground hover:text-foreground ml-2 inline-flex max-w-full items-center gap-1 align-baseline text-sm"
+              )}
               href={post.url}
               target="_blank"
               rel={externalRel}
+              aria-label={`${hostname} (opens in a new tab)`}
             >
-              {post.title}
-              <span className="sr-only"> (opens in a new tab)</span>
+              <span aria-hidden="true">(</span>
+              <span className="min-w-0 wrap-anywhere">{hostname}</span>
+              <HugeiconsIcon
+                icon={ArrowUpRight01Icon}
+                size={12}
+                strokeWidth={2}
+                aria-hidden="true"
+                className="shrink-0"
+              />
+              <span aria-hidden="true">)</span>
             </a>
-          ) : (
-            <Link className={stretchedLink} href={href} prefetch={true}>
-              {post.title}
-            </Link>
           )}
-        </h2>
-        {post.url && hostname && (
-          <a
-            className={cn(
-              raisedLink,
-              "bg-muted text-muted-foreground hover:text-foreground mt-1 inline-flex max-w-full items-center gap-1 rounded-md px-2 py-1 text-xs"
-            )}
-            href={post.url}
-            target="_blank"
-            rel={externalRel}
-            aria-label={`${hostname} (opens in a new tab)`}
-          >
-            <span className="min-w-0 wrap-anywhere">{hostname}</span>
-            <HugeiconsIcon
-              icon={ArrowUpRight01Icon}
-              size={12}
-              strokeWidth={2}
-              aria-hidden="true"
-              className="shrink-0"
-            />
-          </a>
-        )}
+        </div>
         <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-normal">
           <span>
             by{" "}
@@ -121,7 +130,7 @@ export const PostCard = ({ post }: { post: FeedPost }) => {
           <Link
             className={cn(
               raisedLink,
-              "hover:text-foreground bg-muted rounded-md px-2 py-1 text-xs underline-offset-4 hover:underline"
+              "hover:text-foreground bg-muted rounded-md px-2 py-1 text-xs"
             )}
             href={`/t/${post.tag}`}
           >
