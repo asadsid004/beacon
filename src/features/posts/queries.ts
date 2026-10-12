@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { posts, users } from "@/db/schema";
@@ -8,6 +8,16 @@ import { PAGE_SIZE } from "@/lib/pagination";
 import type { FeedSort } from "./feed-params";
 
 export const HOT_RANKING_EXPONENT = 1.5;
+
+export const getPopularTags = () => {
+  const postCount = count();
+  return db
+    .select({ tag: posts.tag, postCount })
+    .from(posts)
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
+    .groupBy(posts.tag)
+    .orderBy(desc(postCount), asc(posts.tag));
+};
 
 export const getPublicFeed = async ({
   sort,

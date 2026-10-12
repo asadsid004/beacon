@@ -11,13 +11,15 @@ import { PostCard } from "./post-card";
 export const Feed = async ({
   sort,
   page,
+  tag,
 }: {
   sort: FeedSort;
   page: number;
+  tag?: string;
 }) => {
   await connection();
-  const feed = await getPublicFeed({ sort, page });
-  if (page > 1 && feed.posts.length === 0) {
+  const feed = await getPublicFeed({ sort, page, tag });
+  if ((tag !== undefined || page > 1) && feed.posts.length === 0) {
     notFound();
   }
   return (
@@ -38,10 +40,10 @@ export const Feed = async ({
       )}
       <Pagination
         previousHref={
-          page > 1 ? getFeedHref({ sort, page: page - 1 }) : undefined
+          page > 1 ? getFeedHref({ sort, page: page - 1, tag }) : undefined
         }
         nextHref={
-          feed.hasNext ? getFeedHref({ sort, page: page + 1 }) : undefined
+          feed.hasNext ? getFeedHref({ sort, page: page + 1, tag }) : undefined
         }
       />
     </>

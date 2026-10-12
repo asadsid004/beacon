@@ -23,7 +23,8 @@ export const FeedTabs = ({ className }: { className?: string }) => {
       <ul className="scrollbar-hidden -ml-3 flex h-11 overflow-x-auto md:ml-0 md:h-full md:overflow-visible">
         {links.map((link) => {
           const active = link.sort
-            ? pathname === "/" && sort === link.sort
+            ? (pathname === "/" && sort === link.sort) ||
+              (pathname.startsWith("/t/") && link.sort === "hot")
             : pathname === "/tags";
           return (
             <li key={link.label} className="h-full shrink-0">
