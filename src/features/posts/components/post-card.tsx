@@ -32,7 +32,7 @@ export const PostCard = ({ post }: { post: FeedPost }) => {
   const comments = `${numberFormat.format(post.commentCount)} ${pluralRules.select(post.commentCount) === "one" ? "comment" : "comments"}`;
 
   return (
-    <article className="text-foreground relative flex items-start gap-3 sm:gap-4">
+    <article className="text-foreground hover:bg-muted/50 relative -mx-3 flex items-start gap-3 rounded-lg px-3 py-2 transition-colors sm:gap-4">
       <div className="relative z-10 flex w-12 shrink-0 flex-col items-center gap-1">
         <Button
           variant="vote"
