@@ -6,7 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { getFeedHref } from "../feed-params";
 import type { FeedSort } from "../feed-params";
 import { getPublicFeed } from "../queries";
-import { PostCard } from "./post-card";
+import { PostList } from "./post-list";
 
 export const Feed = async ({
   sort,
@@ -25,11 +25,7 @@ export const Feed = async ({
   return (
     <>
       {feed.posts.length > 0 ? (
-        <div className="space-y-6">
-          {feed.posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
+        <PostList posts={feed.posts} />
       ) : (
         <div className="py-12">
           <h2 className="font-heading text-lg font-semibold">No posts yet</h2>

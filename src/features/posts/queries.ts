@@ -9,6 +9,20 @@ import type { FeedSort } from "./feed-params";
 
 export const HOT_RANKING_EXPONENT = 1.5;
 
+export const getPublicAuthorPostCount = async (authorId: string) => {
+  const [result] = await db
+    .select({ count: count() })
+    .from(posts)
+    .where(
+      and(
+        eq(posts.authorId, authorId),
+        eq(posts.status, "published"),
+        isNull(posts.deletedAt)
+      )
+    );
+  return result.count;
+};
+
 export const getPopularTags = () => {
   const postCount = count();
   return db
@@ -23,10 +37,12 @@ export const getPublicFeed = async ({
   sort,
   page,
   tag,
+  authorId,
 }: {
   sort: FeedSort;
   page: number;
   tag?: string;
+  authorId?: string;
 }) => {
   const hotRank = sql`(${posts.score} + 1) / power(greatest(extract(epoch from (CURRENT_TIMESTAMP - ${posts.publishedAt})) / 3600, 0) + 2, ${HOT_RANKING_EXPONENT})`;
   const order = [desc(posts.publishedAt), asc(posts.id)];
@@ -55,7 +71,8 @@ export const getPublicFeed = async ({
       and(
         eq(posts.status, "published"),
         isNull(posts.deletedAt),
-        tag === undefined ? undefined : eq(posts.tag, tag)
+        tag === undefined ? undefined : eq(posts.tag, tag),
+        authorId === undefined ? undefined : eq(posts.authorId, authorId)
       )
     )
     .orderBy(...order)

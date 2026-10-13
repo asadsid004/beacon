@@ -24,7 +24,13 @@ const stretchedLink =
 const raisedLink =
   "relative z-10 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export const PostCard = ({ post }: { post: FeedPost }) => {
+export const PostCard = ({
+  post,
+  showAuthor = true,
+}: {
+  post: FeedPost;
+  showAuthor?: boolean;
+}) => {
   const href = `/p/${post.id}`;
   const hostname = post.url
     ? URL.parse(post.url)?.hostname.replace(/^www\./u, "")
@@ -96,19 +102,21 @@ export const PostCard = ({ post }: { post: FeedPost }) => {
           )}
         </div>
         <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-normal">
-          <span>
-            by{" "}
-            {post.authorUsername ? (
-              <Link
-                className={cn(raisedLink, "hover:text-foreground")}
-                href={`/u/${post.authorUsername}`}
-              >
-                {post.authorUsername}
-              </Link>
-            ) : (
-              <span>[deleted]</span>
-            )}
-          </span>
+          {showAuthor && (
+            <span>
+              by{" "}
+              {post.authorUsername ? (
+                <Link
+                  className={cn(raisedLink, "hover:text-foreground")}
+                  href={`/u/${post.authorUsername}`}
+                >
+                  {post.authorUsername}
+                </Link>
+              ) : (
+                <span>[deleted]</span>
+              )}
+            </span>
+          )}
           <PostDate date={post.publishedAt} />
           <Link
             className={cn(
