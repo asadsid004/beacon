@@ -53,7 +53,7 @@ export const PostCard = ({
             className="size-5"
             aria-hidden="true"
           />
-          <span className="text-xs tabular-nums">
+          <span className="font-mono text-xs tabular-nums">
             {compactNumberFormat.format(post.score)}
           </span>
         </Button>

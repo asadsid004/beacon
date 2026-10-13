@@ -26,7 +26,9 @@ export const PopularTags = async () => {
           >
             <span className="min-w-0 font-medium wrap-anywhere">#{tag}</span>
             <span className="text-muted-foreground shrink-0 text-sm tabular-nums">
-              {numberFormat.format(postCount)}{" "}
+              <span className="font-mono">
+                {numberFormat.format(postCount)}
+              </span>{" "}
               {postCount === 1 ? "post" : "posts"}
             </span>
           </Link>
