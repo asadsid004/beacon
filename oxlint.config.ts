@@ -28,6 +28,13 @@ export default defineConfig({
   settings: jsPluginSettings,
   overrides: [
     {
+      files: ["src/features/posts/components/post-image.tsx"],
+      rules: {
+        "nextjs/no-img-element": "off",
+        "react-doctor/nextjs-no-img-element": "off",
+      },
+    },
+    {
       files: ["**/components/ui/**"],
       rules: {
         "react-doctor/only-export-components": "off",

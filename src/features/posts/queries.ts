@@ -9,6 +9,30 @@ import type { FeedSort } from "./feed-params";
 
 export const HOT_RANKING_EXPONENT = 1.5;
 
+export const getPublicPost = async (id: string) => {
+  const [post] = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      url: posts.url,
+      tag: posts.tag,
+      score: posts.score,
+      commentCount: posts.commentCount,
+      body: posts.body,
+      headerImageUrl: posts.headerImageUrl,
+      deletedAt: posts.deletedAt,
+      publishedAt: sql`${posts.publishedAt}`.mapWith(
+        (value: string) => new Date(value)
+      ),
+      authorUsername: users.username,
+    })
+    .from(posts)
+    .leftJoin(users, eq(posts.authorId, users.id))
+    .where(and(eq(posts.id, id), eq(posts.status, "published")))
+    .limit(1);
+  return post ?? null;
+};
+
 export const getPublicAuthorPostCount = async (authorId: string) => {
   const [result] = await db
     .select({ count: count() })
