@@ -1,5 +1,11 @@
-import { ArrowUp02Icon, Comment01Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowUp01Icon,
+  ArrowUpRight01Icon,
+  Comment03Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+
+import { Button } from "@/components/ui/button";
 
 interface ShowcasePost {
   readonly id: string;
@@ -14,92 +20,92 @@ interface ShowcasePost {
 const SHOWCASE_POSTS: readonly ShowcasePost[] = [
   {
     id: "1",
-    title: "Why we moved our job queue from Redis to Postgres",
+    title: "How we cut database costs without slowing queries",
     domain: "notes.example.dev",
     points: 412,
     comments: 138,
     tag: "postgres",
-    age: "3h",
+    age: "3 hours ago",
   },
   {
     id: "2",
-    title: "A field guide to React Server Components caching",
+    title: "A practical guide to caching in Next.js",
     domain: "blog.example.io",
     points: 286,
     comments: 74,
     tag: "react",
-    age: "5h",
+    age: "5 hours ago",
   },
   {
     id: "3",
-    title: "I replaced my homelab with a single VPS",
-    domain: "hosting.example.net",
+    title: "Running AI-generated code in isolated sandboxes",
+    domain: "projects.example.net",
     points: 198,
     comments: 91,
-    tag: "selfhosting",
-    age: "8h",
+    tag: "ai",
+    age: "8 hours ago",
   },
   {
     id: "4",
-    title: "What actually happens during a TLS handshake",
+    title: "What a TLS handshake looks like, step by step",
     domain: "learn.example.org",
     points: 154,
     comments: 33,
     tag: "security",
-    age: "11h",
+    age: "11 hours ago",
   },
   {
     id: "5",
-    title: "Ask Beacon: what are you building this month?",
+    title: "What happens when a cloud agent loses its connection?",
     points: 107,
     comments: 210,
-    tag: "discussion",
-    age: "14h",
+    tag: "agents",
+    age: "14 hours ago",
   },
   {
     id: "6",
-    title: "Designing zero-dependency UI primitives in TypeScript",
+    title: "Building accessible menus without a UI framework",
     domain: "ui.example.com",
     points: 101,
     comments: 59,
     tag: "typescript",
-    age: "16h",
+    age: "16 hours ago",
   },
   {
     id: "7",
-    title: "SQLite on NVMe: benchmarks and surprises",
+    title: "When SQLite is enough for a production app",
     domain: "storage.example.org",
     points: 97,
     comments: 142,
     tag: "database",
-    age: "19h",
+    age: "19 hours ago",
   },
   {
     id: "8",
-    title: "Show Beacon: A minimal Hacker News reader for e-ink",
+    title: "Choosing between containers and microVMs in the cloud",
     domain: "tools.example.dev",
     points: 94,
     comments: 88,
-    tag: "show",
-    age: "1d",
+    tag: "cloud",
+    age: "1 day ago",
   },
   {
     id: "9",
-    title: "How Linux cgroups v2 actually manage memory",
+    title: "Debugging a memory leak in a small Linux server",
     domain: "kernel.example.net",
     points: 83,
     comments: 64,
     tag: "linux",
-    age: "1d",
+    age: "1 day ago",
   },
   {
     id: "10",
-    title: "A visual breakdown of Raft consensus edge cases",
+    title: "What we learned from our first production outage",
     domain: "systems.example.io",
     points: 75,
     comments: 103,
-    tag: "distributed",
-    age: "2d",
+    tag: "engineering",
+    age: "2 days ago",
   },
 ] as const;
 
@@ -116,55 +122,63 @@ export const AuthShowcasePanel = () => (
       </h2>
     </div>
 
-    <div className="mt-10 flex shrink-0 flex-col gap-4">
-      {SHOWCASE_POSTS.map((post) => (
-        <article
-          key={post.id}
-          className="border-border/80 bg-card text-card-foreground flex w-[calc(100%+3rem)] shrink-0 items-center gap-4 rounded-2xl border p-4 shadow-lg shadow-black/15 transition-transform 2xl:gap-5 2xl:p-5 dark:border-white/10 dark:shadow-none"
-        >
-          <div className="bg-muted/70 flex h-13 w-13 shrink-0 flex-col items-center justify-center rounded-xl 2xl:h-16 2xl:w-16 2xl:rounded-2xl">
-            <HugeiconsIcon
-              icon={ArrowUp02Icon}
-              size={18}
-              strokeWidth={2}
-              className="text-primary 2xl:size-5"
-            />
-            <span className="text-foreground font-mono text-sm font-bold 2xl:text-base">
-              {post.points}
-            </span>
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
-              <span className="font-heading text-card-foreground truncate text-base font-semibold tracking-tight 2xl:text-lg">
-                {post.title}
-              </span>
-              {post.domain ? (
-                <span className="text-muted-foreground/80 shrink-0 text-xs 2xl:text-sm">
-                  ({post.domain})
-                </span>
-              ) : null}
-            </div>
-
-            <div className="text-muted-foreground mt-1.5 flex items-center gap-2.5 text-xs 2xl:text-sm">
-              <span className="bg-secondary text-secondary-foreground rounded-md px-2 py-0.5 font-medium">
-                {post.tag}
-              </span>
-              <span>&middot;</span>
-              <span>{post.age}</span>
-              <span>&middot;</span>
-              <span className="inline-flex items-center gap-1.5">
+    <div className="bg-background mt-10 shrink-0 rounded-l-2xl p-5 pr-8">
+      <div className="space-y-6">
+        {SHOWCASE_POSTS.map((post) => (
+          <article
+            key={post.id}
+            className="text-foreground relative -mx-3 flex items-start gap-4 rounded-lg px-3 py-2"
+          >
+            <div className="flex w-12 shrink-0 flex-col items-center">
+              <Button variant="vote" size="vote" disabled>
                 <HugeiconsIcon
-                  icon={Comment01Icon}
-                  size={13}
-                  className="shrink-0 2xl:size-4"
+                  icon={ArrowUp01Icon}
+                  strokeWidth={2}
+                  className="size-5"
                 />
-                <span>{post.comments} comments</span>
-              </span>
+                <span className="font-mono text-xs tabular-nums">
+                  {post.points}
+                </span>
+              </Button>
             </div>
-          </div>
-        </article>
-      ))}
+            <div className="min-w-0 flex-1">
+              <div className="leading-normal">
+                <span className="text-lg leading-normal font-medium wrap-anywhere">
+                  {post.title}
+                </span>
+                {post.domain && (
+                  <span className="text-muted-foreground ml-2 inline-flex max-w-full items-center gap-1 align-baseline text-sm">
+                    <span>(</span>
+                    <span className="min-w-0 wrap-anywhere">{post.domain}</span>
+                    <HugeiconsIcon
+                      icon={ArrowUpRight01Icon}
+                      size={12}
+                      strokeWidth={2}
+                      className="shrink-0"
+                    />
+                    <span>)</span>
+                  </span>
+                )}
+              </div>
+              <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-normal">
+                <span>by {post.id === "5" ? "sarah" : "alex"}</span>
+                <span>{post.age}</span>
+                <span className="inline-flex items-center gap-1">
+                  <HugeiconsIcon
+                    icon={Comment03Icon}
+                    size={16}
+                    strokeWidth={2}
+                  />
+                  {post.comments} comments
+                </span>
+                <span className="bg-muted rounded-md px-2 py-1 text-xs">
+                  #{post.tag}
+                </span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </div>
 );
