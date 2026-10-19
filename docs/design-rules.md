@@ -45,6 +45,8 @@ Single focused column inside the shared container for `/`, `/t/[tag]`, and `/p/[
 
 Feed card links and controls follow [PRD section 4](PRD.md#4-feed-card-and-form-rules). Visitor islands follow the [cache matrix](PRD.md#6-route-caching-and-invalidation-matrix).
 
+Post headers keep the feed’s disabled arrow-and-score box until Phase 4. Comments use three rows: author and timestamp permalink, plain-text body, then borderless inline vote, top-level Reply, and Copy link actions. Copy link uses the current origin and pathname plus the comment anchor, and shows "Copied" for 1.5 seconds. Hash-only links resolve the correct comment page when needed. Keep replies expanded in a nested list with a left border. No copy button on the post header and no stretched comment links.
+
 ### Dashboard layout
 
 `src/app/dashboard/layout.tsx` mounts inside the root frame. Container splits into two columns.

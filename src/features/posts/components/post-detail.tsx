@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { PostDate } from "@/components/post-date";
+import { VotePlaceholder } from "@/components/vote-placeholder";
 
 import { getPublicPost } from "../queries";
 import { PostImage } from "./post-image";
@@ -21,50 +22,49 @@ export const PostDetail = async ({ id }: { id: string }) => {
   }
   return (
     <article>
-      <header className="mb-8">
-        <h1 className="font-heading text-2xl leading-snug font-semibold tracking-tight wrap-anywhere sm:text-3xl">
-          {post.url ? (
-            <a
-              href={post.url}
-              target="_blank"
-              rel={externalRel}
-              className="focus-visible:ring-ring rounded-sm underline-offset-4 outline-none hover:underline focus-visible:ring-2"
-            >
-              {post.title}
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          ) : (
-            post.title
-          )}
-        </h1>
-        <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
-          <span>
-            <span className="text-foreground font-mono tabular-nums">
-              {numberFormat.format(post.score)}
-            </span>{" "}
-            {post.score === 1 ? "point" : "points"}
-          </span>
-          <span>
-            by{" "}
-            {post.authorUsername ? (
-              <Link href={`/u/${post.authorUsername}`} className={linkStyle}>
-                {post.authorUsername}
-              </Link>
+      <header className="mb-8 flex items-start gap-3 sm:gap-4">
+        <div className="w-12 shrink-0">
+          <VotePlaceholder score={post.score} label={post.title} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h1 className="font-heading text-2xl leading-snug font-semibold tracking-tight wrap-anywhere sm:text-3xl">
+            {post.url ? (
+              <a
+                href={post.url}
+                target="_blank"
+                rel={externalRel}
+                className="focus-visible:ring-ring rounded-sm underline-offset-4 outline-none hover:underline focus-visible:ring-2"
+              >
+                {post.title}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
             ) : (
-              "[deleted]"
+              post.title
             )}
-          </span>
-          <PostDate date={post.publishedAt} />
-          <span>
-            {numberFormat.format(post.commentCount)}{" "}
-            {post.commentCount === 1 ? "comment" : "comments"}
-          </span>
-          <Link
-            href={`/t/${post.tag}`}
-            className={`${linkStyle} bg-muted px-2 py-1 text-xs`}
-          >
-            #{post.tag}
-          </Link>
+          </h1>
+          <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 text-sm">
+            <span>
+              by{" "}
+              {post.authorUsername ? (
+                <Link href={`/u/${post.authorUsername}`} className={linkStyle}>
+                  {post.authorUsername}
+                </Link>
+              ) : (
+                "[deleted]"
+              )}
+            </span>
+            <PostDate date={post.publishedAt} />
+            <span>
+              {numberFormat.format(post.commentCount)}{" "}
+              {post.commentCount === 1 ? "comment" : "comments"}
+            </span>
+            <Link
+              href={`/t/${post.tag}`}
+              className={`${linkStyle} bg-muted px-2 py-1 text-xs`}
+            >
+              #{post.tag}
+            </Link>
+          </div>
         </div>
       </header>
       {!post.deletedAt && post.headerImageUrl && (

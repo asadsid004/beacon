@@ -1,22 +1,14 @@
-import {
-  ArrowUp01Icon,
-  ArrowUpRight01Icon,
-  Comment03Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowUpRight01Icon, Comment03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 
 import { PostDate } from "@/components/post-date";
-import { Button } from "@/components/ui/button";
+import { VotePlaceholder } from "@/components/vote-placeholder";
 import { cn } from "@/lib/utils";
 
 import type { FeedPost } from "../queries";
 
 const numberFormat = new Intl.NumberFormat("en-US");
-const compactNumberFormat = new Intl.NumberFormat("en-US", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 const pluralRules = new Intl.PluralRules("en-US");
 const externalRel = "noopener noreferrer nofollow ugc";
 const stretchedLink =
@@ -40,23 +32,7 @@ export const PostCard = ({
   return (
     <article className="text-foreground hover:bg-muted/50 relative -mx-3 flex items-start gap-3 rounded-lg px-3 py-2 transition-colors sm:gap-4">
       <div className="relative z-10 flex w-12 shrink-0 flex-col items-center gap-1">
-        <Button
-          variant="vote"
-          size="vote"
-          disabled
-          title={`${numberFormat.format(post.score)} upvotes`}
-          aria-label={`Upvote ${post.title}, score ${numberFormat.format(post.score)}, available in a later release`}
-        >
-          <HugeiconsIcon
-            icon={ArrowUp01Icon}
-            strokeWidth={2}
-            className="size-5"
-            aria-hidden="true"
-          />
-          <span className="font-mono text-xs tabular-nums">
-            {compactNumberFormat.format(post.score)}
-          </span>
-        </Button>
+        <VotePlaceholder score={post.score} label={post.title} />
       </div>
       <div className="min-w-0 flex-1">
         <div className="leading-normal">
