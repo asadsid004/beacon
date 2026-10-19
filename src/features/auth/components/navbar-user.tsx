@@ -11,7 +11,7 @@ export const NavbarUser = async () => {
   const user = await getCurrentUser();
   if (!user) {
     return (
-      <div className="flex w-36 shrink-0 items-center justify-end gap-2 text-xs sm:gap-3 sm:text-sm">
+      <div className="flex shrink-0 items-center justify-end gap-2 text-xs sm:gap-3 sm:text-sm">
         <Button
           variant="outline"
           size="lg"
@@ -33,10 +33,12 @@ export const NavbarUser = async () => {
     );
   }
   return (
-    <div className="flex w-36 shrink-0 items-center justify-end gap-2 sm:gap-3">
-      <span className="text-muted-foreground font-mono text-xs tabular-nums">
-        {numberFormat.format(user.karma)}
-        <span className="sr-only"> karma</span>
+    <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+      <span className="text-muted-foreground text-xs">
+        <span className="font-mono tabular-nums">
+          {numberFormat.format(user.karma)}
+        </span>{" "}
+        karma
       </span>
       <UserMenu username={user.username ?? user.name} />
     </div>
@@ -46,7 +48,7 @@ export const NavbarUser = async () => {
 export const NavbarUserSkeleton = () => (
   <div
     aria-hidden="true"
-    className="flex w-36 shrink-0 items-center justify-end gap-2 sm:gap-3"
+    className="flex shrink-0 items-center justify-end gap-2 sm:gap-3"
   >
     <div className="bg-muted h-4 w-12 rounded-sm motion-safe:animate-pulse" />
     <div className="bg-muted size-8 rounded-full motion-safe:animate-pulse" />
