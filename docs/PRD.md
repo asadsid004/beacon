@@ -214,7 +214,7 @@ On `/login` and `/signup`, a nested async Server Component reads the Better Auth
 
 In this document, "404" means calling Next.js `notFound()` and rendering not-found UI without exposing unavailable content. The bundled `not-found` guide specifies HTTP 404 for non-streamed responses and HTTP 200 when streaming has already started. Tests assert the UI and absent private content; they do not require HTTP 404 for an already-streamed response. Do not block the shell with a new validity query solely to force a status code.
 
-Add `not-found.tsx`, `error.tsx`, and `loading.tsx`, with empty feed, empty profile, and no-comments states. An empty tag disappears under the tag-directory rule. Full SEO at app completion includes route metadata, canonicals for sort/page, robots, and sitemap. [ROADMAP](ROADMAP.md#phase-8-automated-tests-full-seo-and-audit) owns that phase.
+Add `not-found.tsx` and `error.tsx`. Pages own explicit Suspense boundaries with feature skeletons; separate `loading.tsx` files are not required. Include empty feed, empty profile, and no-comments states. An empty tag disappears under the tag-directory rule. Full SEO at app completion includes route metadata, canonicals for sort/page, robots, and sitemap. [ROADMAP](ROADMAP.md#phase-8-automated-tests-full-seo-and-audit) owns that phase.
 
 ### 6. Route caching and invalidation matrix
 

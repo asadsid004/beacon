@@ -45,7 +45,7 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: false,
     timeout: 60_000,
-    env: { BETTER_AUTH_URL: baseURL },
+    env: { BETTER_AUTH_URL: baseURL, PGAPPNAME: "beacon-playwright" },
     gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
   },
 });
