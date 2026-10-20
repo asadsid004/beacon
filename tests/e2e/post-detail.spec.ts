@@ -9,6 +9,48 @@ const getFixtures = async () =>
     JSON.parse(await readFile(".fixtures/manifest.json", "utf-8"))
   );
 
+test("title-only opens its detail by keyboard and its comments link after returning to the feed", async ({
+  page,
+}) => {
+  const { posts } = await getFixtures();
+  await page.goto("/?sort=new");
+  const card = page.locator("article").filter({
+    has: page.getByRole("heading", { name: "title-only", exact: true }),
+  });
+  const title = card.getByRole("link", { name: "title-only", exact: true });
+  await title.focus();
+  await expect(title).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`/p/${posts["title-only"]}$`, "u"));
+  await expect(
+    page.getByRole("heading", { level: 1, name: "title-only", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Comments", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByText("No comments yet.", { exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(1);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/\?sort=new$/u);
+  await expect(
+    page
+      .getByRole("navigation", { name: "Main navigation" })
+      .locator('[aria-current="page"]')
+  ).toHaveText("New");
+  await card
+    .getByRole("link", { name: "Read 0 comments on title-only", exact: true })
+    .click();
+  await expect(page).toHaveURL(new RegExp(`/p/${posts["title-only"]}$`, "u"));
+  await expect(
+    page.getByRole("heading", { level: 1, name: "title-only", exact: true })
+  ).toBeVisible();
+  expect(page.context().pages()).toHaveLength(1);
+});
+
 test("feed titles open details and Markdown is rendered without HTML or body images", async ({
   page,
 }) => {

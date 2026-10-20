@@ -13,8 +13,11 @@ test("feed author links open a public profile with ordered, paginated posts", as
   const { rows } = await pool.query<{ id: string }>(
     "SELECT p.id FROM posts p JOIN users u ON p.author_id = u.id WHERE u.username = 'alice' AND p.status = 'published' AND p.deleted_at IS NULL ORDER BY p.published_at DESC, p.id ASC"
   );
-  await page.goto("/");
-  await page.getByRole("link", { name: "alice", exact: true }).first().click();
+  await page.goto("/?sort=new");
+  const card = page.locator("article").filter({
+    has: page.getByRole("heading", { name: "title-only", exact: true }),
+  });
+  await card.getByRole("link", { name: "alice", exact: true }).click();
   await expect(page).toHaveURL(/\/u\/alice$/u);
   await expect(page).toHaveTitle(/alice/u);
   await expect(
