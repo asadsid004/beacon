@@ -8,17 +8,49 @@ import { z } from "zod";
 import { test } from "../fixtures/cold-app";
 
 const manifestSchema = z.object({ posts: z.record(z.string(), z.uuid()) });
+const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
+
+test.afterAll(async () => {
+  await pool.end();
+});
 
 for (const sort of ["hot", "new", "top"] as const) {
   test(`the ${sort} feed paginates and keeps its selected sort`, async ({
     page,
   }) => {
+    const orders = {
+      hot: "(score::bigint + 1) / power(greatest(extract(epoch from (CURRENT_TIMESTAMP - published_at)) / 3600, 0) + 2, 1.5) DESC, published_at DESC, id ASC",
+      new: "published_at DESC, id ASC",
+      top: "score DESC, published_at DESC, id ASC",
+    };
+    const { rows } = await pool.query<{ id: string }>(
+      `SELECT id FROM posts WHERE status = 'published' AND deleted_at IS NULL ORDER BY ${orders[sort]}`
+    );
+    const checkOrder = async (currentPage: number) => {
+      await expect
+        .poll(() =>
+          page
+            .locator("main article")
+            .filter({ visible: true })
+            .evaluateAll((articles) =>
+              articles.map((article) =>
+                article.querySelector('a[href^="/p/"]')?.getAttribute("href")
+              )
+            )
+        )
+        .toEqual(
+          rows
+            .slice((currentPage - 1) * 20, currentPage * 20)
+            .map(({ id }) => `/p/${id}`)
+        );
+    };
     await page.goto(sort === "hot" ? "/" : `/?sort=${sort}`);
     const sortNav = page.getByRole("navigation", { name: "Main navigation" });
     await expect(sortNav.locator('[aria-current="page"]')).toHaveText(
       { hot: "Hot", new: "New", top: "Top" }[sort]
     );
     await expect(page.locator("article")).toHaveCount(20);
+    await checkOrder(1);
     await expect(
       page.getByRole("link", { name: "Previous", exact: true })
     ).toHaveCount(0);
@@ -27,8 +59,10 @@ for (const sort of ["hot", "new", "top"] as const) {
       sort === "hot" ? /\?page=2$/u : new RegExp(`\\?sort=${sort}&page=2$`, "u")
     );
     await expect(page.locator("article")).toHaveCount(20);
+    await checkOrder(2);
     await page.getByRole("link", { name: "Next", exact: true }).click();
     await expect(page.locator("article")).toHaveCount(5);
+    await checkOrder(3);
     await expect(
       page.getByRole("link", { name: "Next", exact: true })
     ).toHaveCount(0);
@@ -144,7 +178,6 @@ test("hot feeds accept the maximum integer score without overflowing", async ({
   page,
   coldAppURL,
 }) => {
-  const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
   const id = randomUUID();
   try {
     await pool.query(
@@ -168,6 +201,5 @@ test("hot feeds accept the maximum integer score without overflowing", async ({
     await expect(page.locator("main article")).toHaveCount(1);
   } finally {
     await pool.query("DELETE FROM posts WHERE id = $1", [id]);
-    await pool.end();
   }
 });

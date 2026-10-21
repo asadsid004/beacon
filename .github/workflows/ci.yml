@@ -71,6 +71,9 @@ jobs:
       - name: Type check
         run: bun x next typegen && bun x tsc --noEmit
 
+      - name: React diagnostics
+        run: bun run doctor:scoped
+
       - name: Production build
         run: bun run build
 

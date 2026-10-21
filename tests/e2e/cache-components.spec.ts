@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 import { expect } from "@playwright/test";
@@ -79,3 +80,47 @@ for (const kind of ["missing", "draft"] as const) {
     }
   });
 }
+
+test("hot home and tag caches expire without waiting for new and top caches", async ({
+  request,
+  coldAppURL,
+}) => {
+  test.setTimeout(100_000);
+  const id = randomUUID();
+  const title = `Cache expiration ${id}`;
+  const paths = ["/", "/t/ranking", "/?sort=new", "/?sort=top"];
+  const containsPost = async (path: string) => {
+    const separator = path.includes("?") ? "&" : "?";
+    const response = await request.get(
+      `${coldAppURL}${path}${separator}probe=${randomUUID()}`
+    );
+    expect(response.status()).toBe(200);
+    const body = await response.text();
+    return body.includes(title);
+  };
+  try {
+    await Promise.all(paths.map(containsPost));
+    await pool.query(
+      "INSERT INTO posts (id, author_id, title, tag, score, status, published_at) SELECT $1, id, $2, 'ranking', 2147483647, 'published', now() FROM users WHERE username = 'alice'",
+      [id, title]
+    );
+    expect(await Promise.all(paths.map(containsPost))).toEqual([
+      false,
+      false,
+      false,
+      false,
+    ]);
+    await expect
+      .poll(() => Promise.all(paths.slice(0, 2).map(containsPost)), {
+        timeout: 80_000,
+        intervals: [5000],
+      })
+      .toEqual([true, true]);
+    expect(await Promise.all(paths.slice(2).map(containsPost))).toEqual([
+      false,
+      false,
+    ]);
+  } finally {
+    await pool.query("DELETE FROM posts WHERE id = $1", [id]);
+  }
+});

@@ -93,3 +93,8 @@ for (const tag of ["unknown-tag", "INVALID", "invalid_tag"]) {
     await expect(page.locator("article")).toHaveCount(0);
   });
 }
+
+test("the cached ties tag preserves the UUID tie breaker", async ({ page }) => {
+  await page.goto("/t/ties");
+  await expect(page.locator("main article h2")).toHaveText(["tie-a", "tie-b"]);
+});
