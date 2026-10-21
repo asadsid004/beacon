@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { PostDate } from "@/components/post-date";
 import { VotePlaceholder } from "@/components/vote-placeholder";
+import { getCurrentUser } from "@/features/auth/queries";
 
 import { getPublicPost } from "../queries";
 import { PostImage } from "./post-image";
 import { PostMarkdown } from "./post-markdown";
+import { VisitorVote } from "./visitor-vote";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 const externalRel = "noopener noreferrer nofollow ugc";
@@ -22,7 +25,21 @@ export const PostDetail = async ({ id }: { id: string }) => {
     <article>
       <header className="mb-8 flex items-start gap-3 sm:gap-4">
         <div className="w-12 shrink-0">
-          <VotePlaceholder score={post.score} label={post.title} />
+          <Suspense
+            fallback={
+              <VotePlaceholder
+                score={post.score}
+                label={post.title}
+                visitor="pending"
+              />
+            }
+          >
+            <VisitorVote
+              visitor={getCurrentUser()}
+              score={post.score}
+              label={post.title}
+            />
+          </Suspense>
         </div>
         <div className="min-w-0 flex-1">
           <h1 className="font-heading text-2xl leading-snug font-semibold tracking-tight wrap-anywhere sm:text-3xl">

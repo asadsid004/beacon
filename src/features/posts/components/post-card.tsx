@@ -1,12 +1,15 @@
 import { ArrowUpRight01Icon, Comment03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { PostDate } from "@/components/post-date";
 import { VotePlaceholder } from "@/components/vote-placeholder";
+import type { getCurrentUser } from "@/features/auth/queries";
 import { cn } from "@/lib/utils";
 
 import type { FeedPost } from "../queries";
+import { VisitorVote } from "./visitor-vote";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 const pluralRules = new Intl.PluralRules("en-US");
@@ -19,9 +22,11 @@ const raisedLink =
 export const PostCard = ({
   post,
   showAuthor = true,
+  visitor,
 }: {
   post: FeedPost;
   showAuthor?: boolean;
+  visitor?: ReturnType<typeof getCurrentUser>;
 }) => {
   const href = `/p/${post.id}`;
   const hostname = post.url
@@ -32,7 +37,25 @@ export const PostCard = ({
   return (
     <article className="text-foreground hover:bg-muted/50 relative -mx-3 flex items-start gap-3 rounded-lg px-3 py-2 transition-colors sm:gap-4">
       <div className="relative z-10 flex w-12 shrink-0 flex-col items-center gap-1">
-        <VotePlaceholder score={post.score} label={post.title} />
+        {visitor ? (
+          <Suspense
+            fallback={
+              <VotePlaceholder
+                score={post.score}
+                label={post.title}
+                visitor="pending"
+              />
+            }
+          >
+            <VisitorVote
+              visitor={visitor}
+              score={post.score}
+              label={post.title}
+            />
+          </Suspense>
+        ) : (
+          <VotePlaceholder score={post.score} label={post.title} />
+        )}
       </div>
       <div className="min-w-0 flex-1">
         <div className="leading-normal">
