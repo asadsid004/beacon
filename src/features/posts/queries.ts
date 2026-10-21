@@ -1,5 +1,6 @@
 import "server-only";
 import { and, asc, count, desc, eq, isNull, sql } from "drizzle-orm";
+import { cache } from "react";
 
 import { db } from "@/db";
 import { posts, users } from "@/db/schema";
@@ -9,7 +10,7 @@ import type { FeedSort } from "./feed-params";
 
 export const HOT_RANKING_EXPONENT = 1.5;
 
-export const getPublicPost = async (id: string) => {
+const readPublicPost = async (id: string) => {
   const [post] = await db
     .select({
       id: posts.id,
@@ -33,6 +34,8 @@ export const getPublicPost = async (id: string) => {
   return post ?? null;
 };
 
+export const getPublicPost = cache(readPublicPost);
+
 export const getPublicAuthorPostCount = async (authorId: string) => {
   const [result] = await db
     .select({ count: count() })
@@ -47,9 +50,9 @@ export const getPublicAuthorPostCount = async (authorId: string) => {
   return result.count;
 };
 
-export const getPopularTags = () => {
+export const getPopularTags = async () => {
   const postCount = count();
-  return db
+  return await db
     .select({ tag: posts.tag, postCount })
     .from(posts)
     .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
@@ -57,7 +60,7 @@ export const getPopularTags = () => {
     .orderBy(desc(postCount), asc(posts.tag));
 };
 
-export const getPublicFeed = async ({
+const readPublicPostList = async ({
   sort,
   page,
   tag,
@@ -109,6 +112,19 @@ export const getPublicFeed = async ({
     page,
   };
 };
+
+export const getPublicFeed = async ({
+  sort,
+  page,
+  tag,
+}: {
+  sort: FeedSort;
+  page: number;
+  tag?: string;
+}) => await readPublicPostList({ sort, page, tag });
+
+export const getPublicAuthorHistory = async (authorId: string, page: number) =>
+  await readPublicPostList({ sort: "new", page, authorId });
 
 export type FeedPost = Awaited<
   ReturnType<typeof getPublicFeed>

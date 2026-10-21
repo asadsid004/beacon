@@ -4,13 +4,9 @@ import { connection } from "next/server";
 import { Pagination } from "@/components/pagination";
 import { FeedSkeleton } from "@/features/posts/components/feed";
 import { PostList } from "@/features/posts/components/post-list";
-import {
-  getPublicFeed,
-  getPublicAuthorPostCount,
-} from "@/features/posts/queries";
 
 import { getProfileHref } from "../profile-params";
-import { getPublicAuthor } from "../queries";
+import { getPublicProfile } from "../queries";
 
 const numberFormat = new Intl.NumberFormat("en-US");
 const joinedFormat = new Intl.DateTimeFormat("en-US", {
@@ -27,14 +23,11 @@ export const AuthorProfile = async ({
   page: number;
 }) => {
   await connection();
-  const author = await getPublicAuthor(username);
-  if (!author) {
+  const profile = await getPublicProfile(username, page);
+  if (!profile) {
     notFound();
   }
-  const [feed, postCount] = await Promise.all([
-    getPublicFeed({ sort: "new", page, authorId: author.id }),
-    getPublicAuthorPostCount(author.id),
-  ]);
+  const { author, feed, postCount } = profile;
   if (page > 1 && feed.posts.length === 0) {
     notFound();
   }
