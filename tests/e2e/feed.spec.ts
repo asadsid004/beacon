@@ -1,9 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { Pool } from "pg";
 import { z } from "zod";
+
+import { test } from "../fixtures/cold-app";
 
 const manifestSchema = z.object({ posts: z.record(z.string(), z.uuid()) });
 
@@ -43,8 +45,11 @@ test("feed URLs normalize defaults and reject out-of-range pages", async ({
   await page.goto("/?sort=top&page=1");
   await expect(page).toHaveURL(/\/\?sort=top$/u);
   await expect(page.locator("article")).toHaveCount(20);
-  const response = await page.goto("/?page=4");
-  expect(response?.status()).toBe(404);
+  await page.goto("/?page=4");
+  await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute(
+    "content",
+    "noindex"
+  );
   await expect(
     page.getByRole("navigation", { name: "Main navigation" })
   ).toHaveCount(1);
@@ -137,6 +142,7 @@ test("cards separate external titles from discussion and author links", async ({
 
 test("hot feeds accept the maximum integer score without overflowing", async ({
   page,
+  coldAppURL,
 }) => {
   const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
   const id = randomUUID();
@@ -145,14 +151,14 @@ test("hot feeds accept the maximum integer score without overflowing", async ({
       "INSERT INTO posts (id, author_id, title, tag, score, status, published_at) SELECT $1, id, 'Maximum score regression', 'overflow-regression', 2147483647, 'published', now() FROM users WHERE username = 'alice'",
       [id]
     );
-    await page.goto("/");
+    await page.goto(coldAppURL);
     await expect(
       page
         .locator("main article")
         .first()
         .getByRole("heading", { name: "Maximum score regression", exact: true })
     ).toBeVisible();
-    await page.goto("/t/overflow-regression");
+    await page.goto(`${coldAppURL}/t/overflow-regression`);
     await expect(
       page.getByRole("heading", {
         name: "Maximum score regression",

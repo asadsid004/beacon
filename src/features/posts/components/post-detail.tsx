@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 
 import { PostDate } from "@/components/post-date";
 import { VotePlaceholder } from "@/components/vote-placeholder";
@@ -15,7 +14,6 @@ const linkStyle =
   "hover:text-foreground focus-visible:ring-ring rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
 
 export const PostDetail = async ({ id }: { id: string }) => {
-  await connection();
   const post = await getPublicPost(id);
   if (!post) {
     notFound();

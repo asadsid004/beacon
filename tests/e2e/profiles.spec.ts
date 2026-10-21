@@ -14,9 +14,12 @@ test("feed author links open a public profile with ordered, paginated posts", as
     "SELECT p.id FROM posts p JOIN users u ON p.author_id = u.id WHERE u.username = 'alice' AND p.status = 'published' AND p.deleted_at IS NULL ORDER BY p.published_at DESC, p.id ASC"
   );
   await page.goto("/?sort=new");
-  const card = page.locator("article").filter({
-    has: page.getByRole("heading", { name: "title-only", exact: true }),
-  });
+  const card = page
+    .locator("article")
+    .filter({ visible: true })
+    .filter({
+      has: page.getByRole("heading", { name: "title-only", exact: true }),
+    });
   await card.getByRole("link", { name: "alice", exact: true }).click();
   await expect(page).toHaveURL(/\/u\/alice$/u);
   await expect(page).toHaveTitle(/alice/u);
@@ -27,12 +30,17 @@ test("feed author links open a public profile with ordered, paginated posts", as
     `${rows.length} posts`
   );
   await expect(page.locator("main header time")).toBeVisible();
-  await expect(page.locator('article a[href="/u/alice"]')).toHaveCount(0);
+  await expect(
+    page.locator('article a[href="/u/alice"]').filter({ visible: true })
+  ).toHaveCount(0);
   const checkPage = async (currentPage: number): Promise<void> => {
     const expected = rows.slice((currentPage - 1) * 20, currentPage * 20);
-    await expect(page.locator("article")).toHaveCount(expected.length);
+    await expect(page.locator("article").filter({ visible: true })).toHaveCount(
+      expected.length
+    );
     const hrefs = await page
       .locator("article")
+      .filter({ visible: true })
       .evaluateAll((articles) =>
         articles.map((article) =>
           article.querySelector('a[href^="/p/"]')?.getAttribute("href")
@@ -61,7 +69,9 @@ test("feed author links open a public profile with ordered, paginated posts", as
   await page.goto("/u/alice?page=1");
   await expect(page).toHaveURL(/\/u\/alice$/u);
   await page.goto("/u/alice?page=invalid");
-  await expect(page.locator("article")).toHaveCount(20);
+  await expect(page.locator("article").filter({ visible: true })).toHaveCount(
+    20
+  );
 });
 
 test("profiles show stored karma and a useful empty state", async ({
@@ -84,7 +94,9 @@ test("profiles show stored karma and a useful empty state", async ({
   await expect(
     page.getByText("This author has no published posts yet.")
   ).toBeVisible();
-  await expect(page.locator("article")).toHaveCount(0);
+  await expect(page.locator("article").filter({ visible: true })).toHaveCount(
+    0
+  );
   await expect(
     page.getByRole("navigation", { name: "Pagination" })
   ).toHaveCount(0);
@@ -101,6 +113,8 @@ for (const route of [
     await expect(
       page.getByRole("heading", { name: "Page not found" })
     ).toBeVisible();
-    await expect(page.locator("article")).toHaveCount(0);
+    await expect(page.locator("article").filter({ visible: true })).toHaveCount(
+      0
+    );
   });
 }

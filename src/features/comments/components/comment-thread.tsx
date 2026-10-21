@@ -2,7 +2,6 @@ import { ArrowUp01Icon as ChevronUpIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { connection } from "next/server";
 
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Pagination } from "@/components/pagination";
@@ -98,7 +97,6 @@ export const CommentThread = async ({
   commentId?: string;
   explicitFirstPage: boolean;
 }) => {
-  await connection();
   const post = await getPublicPost(postId);
   if (!post) {
     notFound();

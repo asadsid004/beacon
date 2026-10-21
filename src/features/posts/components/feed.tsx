@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 
 import { Pagination } from "@/components/pagination";
 
@@ -17,7 +16,6 @@ export const Feed = async ({
   page: number;
   tag?: string;
 }) => {
-  await connection();
   const feed = await getPublicFeed({ sort, page, tag });
   if ((tag !== undefined || page > 1) && feed.posts.length === 0) {
     notFound();

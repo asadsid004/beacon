@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
 
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { Pool } from "pg";
 import { z } from "zod";
+
+import { test } from "../fixtures/cold-app";
 
 const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
 const manifestSchema = z.object({ posts: z.record(z.string(), z.uuid()) });
@@ -29,9 +31,11 @@ test.afterAll(async () => {
   await pool.end();
 });
 
-test("tag loading keeps the navbar usable until the database read completes", async ({
+test("cached tags and the navbar stay usable while the database is locked", async ({
   page,
 }) => {
+  await page.goto("/tags");
+  await expect(page.locator('main a[href^="/t/"]').first()).toBeVisible();
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -39,7 +43,8 @@ test("tag loading keeps the navbar usable until the database read completes", as
     await page.goto("/tags", { waitUntil: "commit" });
     await expect(
       page.getByRole("status").filter({ hasText: "Loading tags" })
-    ).toBeVisible();
+    ).toHaveCount(0);
+    await expect(page.locator('main a[href^="/t/"]').first()).toBeVisible();
     await expect(
       page.getByRole("navigation", { name: "Main navigation" })
     ).toHaveCount(1);
@@ -62,13 +67,16 @@ test("tag loading keeps the navbar usable until the database read completes", as
 
 test("post content renders while comments are loading and retry recovers a failed read", async ({
   page,
+  coldAppURL,
 }) => {
   const { posts } = await fixtures();
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     await client.query("LOCK TABLE comments IN ACCESS EXCLUSIVE MODE");
-    await page.goto(`/p/${posts["thread-post"]}`, { waitUntil: "commit" });
+    await page.goto(`${coldAppURL}/p/${posts["thread-post"]}`, {
+      waitUntil: "commit",
+    });
     await expect(
       page.getByRole("heading", { name: "thread-post", exact: true })
     ).toBeVisible();

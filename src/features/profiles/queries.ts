@@ -1,5 +1,6 @@
 import "server-only";
 import { eq } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -23,6 +24,9 @@ const getPublicAuthor = async (username: string) => {
 };
 
 export const getPublicProfile = async (username: string, page: number) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`profile-${username}`);
   const author = await getPublicAuthor(username);
   if (!author) {
     return null;

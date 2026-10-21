@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { connection } from "next/server";
 
 import { getFeedHref } from "../feed-params";
 import { getPopularTags } from "../queries";
@@ -7,7 +6,6 @@ import { getPopularTags } from "../queries";
 const numberFormat = new Intl.NumberFormat("en-US");
 
 export const PopularTags = async () => {
-  await connection();
   const tags = await getPopularTags();
   if (tags.length === 0) {
     return (

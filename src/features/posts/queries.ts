@@ -1,6 +1,6 @@
 import "server-only";
 import { and, asc, count, desc, eq, isNull, sql } from "drizzle-orm";
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { db } from "@/db";
 import { posts, users } from "@/db/schema";
@@ -10,7 +10,10 @@ import type { FeedSort } from "./feed-params";
 
 export const HOT_RANKING_EXPONENT = 1.5;
 
-const readPublicPost = async (id: string) => {
+export const getPublicPost = async (id: string) => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`post-${id}`);
   const [post] = await db
     .select({
       id: posts.id,
@@ -34,8 +37,6 @@ const readPublicPost = async (id: string) => {
   return post ?? null;
 };
 
-export const getPublicPost = cache(readPublicPost);
-
 export const getPublicAuthorPostCount = async (authorId: string) => {
   const [result] = await db
     .select({ count: count() })
@@ -51,6 +52,9 @@ export const getPublicAuthorPostCount = async (authorId: string) => {
 };
 
 export const getPopularTags = async () => {
+  "use cache";
+  cacheLife("days");
+  cacheTag("tags");
   const postCount = count();
   return await db
     .select({ tag: posts.tag, postCount })
@@ -121,7 +125,16 @@ export const getPublicFeed = async ({
   sort: FeedSort;
   page: number;
   tag?: string;
-}) => await readPublicPostList({ sort, page, tag });
+}) => {
+  "use cache";
+  if (sort === "hot") {
+    cacheLife("minutes");
+  } else {
+    cacheLife("hours");
+  }
+  cacheTag(tag === undefined ? "feed" : `feed-${tag}`);
+  return await readPublicPostList({ sort, page, tag });
+};
 
 export const getPublicAuthorHistory = async (authorId: string, page: number) =>
   await readPublicPostList({ sort: "new", page, authorId });

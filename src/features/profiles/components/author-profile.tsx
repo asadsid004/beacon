@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 
 import { Pagination } from "@/components/pagination";
 import { FeedSkeleton } from "@/features/posts/components/feed";
@@ -22,7 +21,6 @@ export const AuthorProfile = async ({
   username: string;
   page: number;
 }) => {
-  await connection();
   const profile = await getPublicProfile(username, page);
   if (!profile) {
     notFound();
