@@ -4,16 +4,17 @@ This file owns layout, tokens, viewports, and motion. [PRD](PRD.md) owns product
 
 ## Application shell architecture
 
-One frame spans all routes. Top navbar and outer container stay in the same position on public and dashboard pages, so transitions produce zero layout shift.
+Public and dashboard pages share a frame. Top navbar and outer container stay in the same position across those pages. Auth pages use their own layout without the navbar.
 
 ### Universal top navigation bar
 
-Root layout at `src/app/layout.tsx` renders the bar on every route.
+The shared layout at `src/app/(main)/layout.tsx` renders the bar on public and dashboard routes. Login and signup stay in `src/app/(auth)/`.
 
-- Height fixed at 56 pixels with bottom border using `border-b border-border`.
-- Left holds Beacon logo plus public filters Hot, New, Top, Tags.
-- Right holds bell with count badge, `+ New post` button, karma in the [AGENTS metadata font](../AGENTS.md#agent-notes), and avatar menu. Anonymous visitors see Sign in and Sign up.
+- Sticky at the top with `border-b border-border`. Desktop height is 56 pixels. Below 768 pixels, the logo and account controls occupy a compact 44-pixel row, with filters in a second row.
+- Left holds the Beacon logo. From 768 pixels, Hot/New/Top/Tags fill the 56-pixel row, right-aligned between the logo and action group. Below that width, left-aligned filters occupy a separate 44-pixel row under the logo and actions. Use flex order classes and one FeedTabs instance for both layouts, with one bottom border on the header.
+- Right holds bell with count badge, `+ New post` button, karma in the [AGENTS metadata font](../AGENTS.md#agent-notes), and avatar menu. Anonymous visitors see an outlined Log in button and a primary Sign up button.
 - The session-aware user slot sits inside Suspense. It shows karma and avatar after resolving; unresolved state uses a neutral placeholder. [ROADMAP](ROADMAP.md#implementation-phases) owns when the navbar, bell, and New post destination ship.
+- Filters use underline tabs with muted inactive text, foreground active text, and a 2-pixel primary indicator. Keep text size and weight fixed, transition only colors, and scroll overflow inside the nav with a hidden scrollbar.
 - Bar stays mounted during client navigation.
 
 ### Page container boundary
@@ -43,6 +44,8 @@ Single focused column inside the shared container for `/`, `/t/[tag]`, and `/p/[
 ```
 
 Feed card links and controls follow [PRD section 4](PRD.md#4-feed-card-and-form-rules). Visitor islands follow the [cache matrix](PRD.md#6-route-caching-and-invalidation-matrix).
+
+Post headers keep the feed’s disabled arrow-and-score box until Phase 4. Comments use three rows: author and timestamp permalink, plain-text body, then borderless inline vote, top-level Reply, and Copy link actions. Copy link uses the current origin and pathname plus the comment anchor, and shows "Copied" for 1.5 seconds. Hash-only links resolve the correct comment page when needed. Keep replies expanded in a nested list with a left border. No copy button on the post header and no stretched comment links.
 
 ### Dashboard layout
 
@@ -85,13 +88,28 @@ Check heading sizes and line heights at 1366 and 1440. Titles must not wrap to s
 
 Boundaries cap at `max-w-5xl` with fluid padding. Dashboard never exceeds the cap.
 
+The navbar owns Hot/New/Top sorting and marks the current filter with `aria-current="page"`. Do not repeat these controls below the feed heading. When tag sorting ships, preserve the selected tag when changing sort.
+
 ### Zero horizontal page scroll
+
+Keep a vertical scrollbar on `html` with `overflow-y: scroll` so short and long pages keep the same horizontal alignment without an empty reserved gutter. Set document scroll padding for the sticky header so focused controls stay visible.
 
 Body never shows horizontal scroll at any width. Code blocks and tables use local `overflow-x-auto`.
 
 ### Media boundaries
 
 All images, videos, and embeds use `max-width 100%` and `height auto`. Header images use the rendering and fallback contract in [PRD section 4](PRD.md#4-feed-card-and-form-rules).
+
+## Button sizes
+
+Use explicit sizes on the shared `Button` component:
+
+- Form action buttons use `size="xl"`, matching the form input height.
+- Other text buttons use `size="lg"`.
+- Icon-only buttons use `size="icon"`.
+- Feed vote buttons use `size="vote"` for a stacked arrow and score.
+
+Do not override button height, padding, or font size with classes. Navigation tabs follow the navbar's 44-pixel mobile and 56-pixel desktop heights rather than button sizes. Regular text links remain links.
 
 ## Color system and tokens
 

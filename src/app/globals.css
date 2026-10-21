@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --text-auth-showcase: clamp(2rem, 4vw, 4rem);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -161,4 +162,22 @@
       color-mix(in oklch, var(--primary), black 15%),
       color-mix(in oklch, var(--primary), black 35%)
     );
+}
+
+html {
+  overflow-y: scroll;
+  scroll-padding-top: 6rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 4.5rem;
+  }
+}
+
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

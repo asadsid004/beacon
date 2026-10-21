@@ -8,9 +8,7 @@ interface AuthSessionGateProps {
   children: ReactNode;
 }
 
-// Async Server Component: reads the session and redirects signed-in users.
-// oxlint-disable-next-line react-doctor/only-export-components
-export const AuthSessionGate = async ({ children }: AuthSessionGateProps) => {
+const AuthSessionGate = async ({ children }: AuthSessionGateProps) => {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (session) {
@@ -19,6 +17,8 @@ export const AuthSessionGate = async ({ children }: AuthSessionGateProps) => {
 
   return children;
 };
+
+export { AuthSessionGate };
 
 export const AuthFormSkeleton = () => (
   <div

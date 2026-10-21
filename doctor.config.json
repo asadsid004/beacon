@@ -2,5 +2,28 @@
   "$schema": "https://react.doctor/schema/config.json",
   "rules": {
     "react-doctor/only-export-components": "off"
+  },
+  "ignore": {
+    "files": [
+      ".fixtures/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
+      "node_modules/**",
+      ".vercel/**"
+    ],
+    "overrides": [
+      {
+        "files": ["src/features/posts/components/post-image.tsx"],
+        "rules": ["react-doctor/nextjs-no-img-element"]
+      },
+      {
+        "files": ["src/features/auth/components/auth-switch-link.tsx"],
+        "rules": ["react-doctor/url-prefilled-privileged-action"]
+      }
+    ]
   }
 }

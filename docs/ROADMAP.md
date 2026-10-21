@@ -23,12 +23,12 @@ All task verification commands in [AGENTS](../AGENTS.md#task-verification-checkl
 - Install runtime packages `@tanstack/react-query` and `react-markdown`. Install dev packages `@playwright/test` and `@next/playwright`; the Playwright runner supplies the underlying `playwright` dependency. Add the test command and planned `db:seed` command in [AGENTS](../AGENTS.md#commands). Use Bun only.
 - Mount a client `QueryClientProvider` at the root, with one stable browser QueryClient. It has no notification consumer yet. Root placement follows [PRD section 7](PRD.md#7-dashboard-architecture-and-persistent-shell).
 - Build `/`, `/t/[tag]`, `/tags`, `/p/[id]`, and `/u/[username]` with plain server fetching. Keep `cacheComponents`, `partialPrefetching`, and `use cache` off. Use `connection()` outside the plain read boundary to make these database reads request-time work rather than static build snapshots.
-- Build the static root navbar and Suspense user slot according to [design rules](design-rules.md#universal-top-navigation-bar). Signed-in feature controls appear only when their destination/action ships.
+- Build the shared navbar and Suspense user slot for public and dashboard routes according to [design rules](design-rules.md#universal-top-navigation-bar). Auth pages have no navbar. Signed-in feature controls appear only when their destination/action ships.
 - Build cards, body rendering, image fallback, sorting, pagination, and dates from [PRD section 4](PRD.md#4-feed-card-and-form-rules). Explicit stretched-link prefetch works in Phase 1 production; Phase 3 changes its model.
 - Give detail body and thread separate Suspense boundaries and skeletons now. Keep thread reads out of the body await chain. Phase 4 adds interactive controls, not the first comments boundary.
 - Add errors, not-found, loading, and empty states from [PRD section 5](PRD.md#5-route-map).
 - Implement the [seed contract and named fixtures](PRD.md#seed-contract-and-named-fixtures), including synthetic scores and fixture karma for this phase.
-- Set up local and CI Postgres, migrations, seed, browser installation, production server startup, and Playwright in the order specified in [CI setup](#ci-setup-from-phase-1).
+- Set up local and CI Postgres, migrations, seed, browser installation, and Playwright. Playwright starts the production server for each test run as specified in [CI setup](#ci-setup-from-phase-1).
 - Add Playwright feed-to-detail and feed-to-profile tests using `title-only` and `alice`.
 
 Exit checks:
@@ -125,17 +125,25 @@ Exit. All required tests pass locally and in CI. Every matrix refresh matches so
 
 ## CI setup from Phase 1
 
-Use a Postgres 17 service container locally and in CI with a health check. CI uses an isolated fixture database and UTC timezone. It does not connect to production Neon. Configure `DATABASE_URL`, a test-only Better Auth secret, and `BETTER_AUTH_URL` matching the production test server, normally `http://localhost:3000`. Capture one current UTC `SEED_REFERENCE_TIME` before seeding and retain it in the run manifest, as specified in the [seed contract](PRD.md#seed-contract-and-named-fixtures). Reusing that value reproduces the fixture timestamps exactly.
+Use a Postgres 18 service container locally and in CI with a health check. CI uses an isolated fixture database and UTC timezone. It does not connect to production Neon. Configure `DATABASE_URL`, a test-only Better Auth secret, and `BETTER_AUTH_URL` matching the production test server, normally `http://localhost:3000`. Capture one current UTC `SEED_REFERENCE_TIME` before seeding and retain it in the run manifest, as specified in the [seed contract](PRD.md#seed-contract-and-named-fixtures). Reusing that value reproduces the fixture timestamps exactly.
+
+Production uses Neon. Development and tests use the existing Postgres container. Tests use `beacon_fixture`, a separate database with resettable sample data.
+
+Start it with `docker compose up -d --wait postgres`; `--wait` waits until Postgres is ready. Create the test database once with `docker compose exec -T postgres createdb -U postgres beacon_fixture`. For the test run, set `DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/beacon_fixture` and use the test auth settings above. If port 5432 is occupied, set `POSTGRES_PORT` to a free port and use that port in `DATABASE_URL`.
 
 Run CI in this order:
+
+Run `bun run db:seed` with `FIXTURE_DATABASE_URL` set to the same value as the test `DATABASE_URL`. The command only accepts the local or CI `beacon_fixture` database and refuses production. It writes fixture IDs and the reference time to `.fixtures/manifest.json`. Reruns replace domain fixtures and preserve auth users.
 
 1. Install with `bun install --frozen-lockfile` and install Playwright Chromium plus its Linux system dependencies.
 2. Wait for Postgres health, then run migrations with `bun run db:migrate` and seed with `bun run db:seed`.
 3. Run check, typegen/typecheck, scoped React Doctor, and production build using the [AGENTS verification commands](../AGENTS.md#task-verification-checklist). Builds may query the fixture database.
-4. Start the built app with `bun start`, wait for readiness, and run `bun run test:e2e` against that server. Playwright retains traces on failure.
-5. Stop the server and database/test transactions during cleanup.
+4. Run `bun run test:e2e`. Playwright starts the built app with `bun start`, waits for readiness, runs the tests against it, retains traces on failure, and stops the server after the run. Do not start a separate app server first.
+5. Clean up database/test transactions after the run.
 
-The same migrate, seed, build, start, and test order applies locally. Playwright and its browser setup ship in Phase 1, rather than waiting for Phase 2. `@next/playwright` ships with the runner setup and its `instant()` helper first appears in Phase 3 timing coverage.
+The same migrate, seed, build, and test order applies locally. Playwright starts and stops the built app during the test command. Playwright and its browser setup ship in Phase 1, rather than waiting for Phase 2. `@next/playwright` ships with the runner setup and its `instant()` helper first appears in Phase 3 timing coverage.
+
+Install Chromium locally with `bun x playwright install chromium`. Keep the fixture database environment set through migrate, seed, build, and `bun run test:e2e`. Playwright requires matching `DATABASE_URL` and `FIXTURE_DATABASE_URL` and a free application port, defaulting to 3000. Set `PORT` to use another port; the test server's auth URL follows it. Do not start a separate app server before the test command.
 
 ## Workflow discipline
 

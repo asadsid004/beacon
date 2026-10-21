@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -15,9 +18,32 @@ jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: UTC
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/beacon_fixture
+      FIXTURE_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/beacon_fixture
+      BETTER_AUTH_SECRET: beacon-ci-fixture-secret-not-for-production
+      BETTER_AUTH_URL: http://localhost:3000
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: beacon_fixture
+          TZ: UTC
+          PGTZ: UTC
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d beacon_fixture" --health-interval 2s --health-timeout 5s --health-retries 30 --health-start-period 5s
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -27,8 +53,17 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Setup environment variables
-        run: cp .env.example .env.local
+      - name: Install Playwright Chromium
+        run: bun x playwright install --with-deps chromium
+
+      - name: Run database migrations
+        run: bun run db:migrate
+
+      - name: Capture fixture reference time
+        run: echo "SEED_REFERENCE_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Seed fixtures
+        run: bun run db:seed
 
       - name: Ultracite check
         run: bun run check
@@ -38,3 +73,19 @@ jobs:
 
       - name: Production build
         run: bun run build
+
+      - name: Public-page tests
+        run: bun run test:e2e
+
+      - name: Save fixture manifest and test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-page-test-results
+          path: |
+            .fixtures/manifest.json
+            playwright-report/
+            test-results/
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7

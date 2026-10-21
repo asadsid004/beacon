@@ -61,8 +61,10 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 3. (Optional) Start local PostgreSQL with Docker:
 
    ```bash
-   docker compose up -d
+   docker compose up -d --wait postgres
    ```
+
+   Production uses Neon. Development uses this container; tests use a separate database with resettable sample data. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
 
 4. Start the development server:
    ```bash
@@ -77,6 +79,8 @@ Beacon is a link and text post discussion platform built with Next.js and Postgr
 - `bun run check`: Checks formatting with Oxfmt and runs Oxlint.
 - `bun run fix`: Automatically formats code and fixes lint issues.
 - `bun run doctor`: Runs React Doctor component diagnostic audit.
+- `bun run db:seed`: Seeds the configured fixture database. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
+- `bun run test:e2e`: Runs Chromium tests against the production build. See [test setup](docs/ROADMAP.md#ci-setup-from-phase-1).
 
 ## Project structure
 
