@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 import { expect, test } from "@playwright/test";
+import { Pool } from "pg";
 import { z } from "zod";
 
 const manifestSchema = z.object({ posts: z.record(z.string(), z.uuid()) });
@@ -131,4 +133,35 @@ test("cards separate external titles from discussion and author links", async ({
   await expect(
     page.locator(`article a[href*="${manifest.posts["deleted-thread"]}"]`)
   ).toHaveCount(0);
+});
+
+test("hot feeds accept the maximum integer score without overflowing", async ({
+  page,
+}) => {
+  const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
+  const id = randomUUID();
+  try {
+    await pool.query(
+      "INSERT INTO posts (id, author_id, title, tag, score, status, published_at) SELECT $1, id, 'Maximum score regression', 'overflow-regression', 2147483647, 'published', now() FROM users WHERE username = 'alice'",
+      [id]
+    );
+    await page.goto("/");
+    await expect(
+      page
+        .locator("main article")
+        .first()
+        .getByRole("heading", { name: "Maximum score regression", exact: true })
+    ).toBeVisible();
+    await page.goto("/t/overflow-regression");
+    await expect(
+      page.getByRole("heading", {
+        name: "Maximum score regression",
+        exact: true,
+      })
+    ).toBeVisible();
+    await expect(page.locator("main article")).toHaveCount(1);
+  } finally {
+    await pool.query("DELETE FROM posts WHERE id = $1", [id]);
+    await pool.end();
+  }
 });

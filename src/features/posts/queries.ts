@@ -68,7 +68,7 @@ export const getPublicFeed = async ({
   tag?: string;
   authorId?: string;
 }) => {
-  const hotRank = sql`(${posts.score} + 1) / power(greatest(extract(epoch from (CURRENT_TIMESTAMP - ${posts.publishedAt})) / 3600, 0) + 2, ${HOT_RANKING_EXPONENT})`;
+  const hotRank = sql`(${posts.score}::bigint + 1) / power(greatest(extract(epoch from (CURRENT_TIMESTAMP - ${posts.publishedAt})) / 3600, 0) + 2, ${HOT_RANKING_EXPONENT})`;
   const order = [desc(posts.publishedAt), asc(posts.id)];
   if (sort === "hot") {
     order.unshift(desc(hotRank));
