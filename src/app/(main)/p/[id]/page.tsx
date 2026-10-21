@@ -19,7 +19,7 @@ const resolvePost = async ({ params, searchParams }: PageProps<"/p/[id]">) => {
   }
   const hint = z.uuid().safeParse(search.comment).data;
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <>
       <Suspense fallback={<PostDetailSkeleton />}>
         <PostDetail id={id} />
       </Suspense>
@@ -39,9 +39,13 @@ const resolvePost = async ({ params, searchParams }: PageProps<"/p/[id]">) => {
           />
         </Suspense>
       </section>
-    </main>
+    </>
   );
 };
 
-const PostPage = (props: PageProps<"/p/[id]">) => resolvePost(props);
+const PostPage = (props: PageProps<"/p/[id]">) => (
+  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <Suspense fallback={<PostDetailSkeleton />}>{resolvePost(props)}</Suspense>
+  </main>
+);
 export default PostPage;

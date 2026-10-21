@@ -145,3 +145,31 @@ for (const id of ["invalid", "00000000-0000-4000-8000-000000000000"]) {
     ).toBeVisible();
   });
 }
+
+test("uncached document navigation renders the malformed post not-found page", async ({
+  page,
+}) => {
+  // Disable the browser HTTP cache without mocking responses.
+  await page.route("**/*", (route) => route.continue());
+  await page.goto("/?sort=new");
+  await expect(page.locator("main article")).toHaveCount(20);
+  await page.goto("/t/unknown-fixture-tag");
+  await expect(
+    page.getByRole("heading", { name: "Page not found", exact: true })
+  ).toBeVisible();
+  await page.goto("/u/unknown-fixture-user");
+  await expect(
+    page.getByRole("heading", { name: "Page not found", exact: true })
+  ).toBeVisible();
+  await page.goto("/p/not-a-uuid");
+  await expect(
+    page.getByRole("heading", { name: "Page not found", exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" })
+  ).toHaveCount(1);
+  await page.getByRole("link", { name: "Browse posts", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Posts", exact: true })
+  ).toBeVisible();
+});
