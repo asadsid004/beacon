@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 
 import { Pagination } from "@/components/pagination";
+import { getCurrentUser } from "@/features/auth/queries";
 
 import { getFeedHref } from "../feed-params";
 import type { FeedSort } from "../feed-params";
@@ -17,7 +17,6 @@ export const Feed = async ({
   page: number;
   tag?: string;
 }) => {
-  await connection();
   const feed = await getPublicFeed({ sort, page, tag });
   if ((tag !== undefined || page > 1) && feed.posts.length === 0) {
     notFound();
@@ -25,7 +24,7 @@ export const Feed = async ({
   return (
     <>
       {feed.posts.length > 0 ? (
-        <PostList posts={feed.posts} />
+        <PostList posts={feed.posts} visitor={getCurrentUser()} />
       ) : (
         <div className="py-12">
           <h2 className="font-heading text-lg font-semibold">No posts yet</h2>

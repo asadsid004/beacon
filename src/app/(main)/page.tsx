@@ -14,24 +14,18 @@ const resolveHomeFeed = async (
   if (params.sort === "hot" || params.page === "1") {
     redirect(getFeedHref({ sort, page }));
   }
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
-      <h1 className="font-heading mb-6 text-2xl font-semibold tracking-tight sm:text-3xl">
-        Posts
-      </h1>
-      {/* Finish paginated reads before streaming so an empty page sends HTTP 404. */}
-      {page > 1 ? (
-        <Feed sort={sort} page={page} />
-      ) : (
-        <Suspense fallback={<FeedSkeleton />}>
-          <Feed sort={sort} page={page} />
-        </Suspense>
-      )}
-    </main>
-  );
+  return <Feed sort={sort} page={page} />;
 };
 
-const Home = ({ searchParams }: PageProps<"/">) =>
-  resolveHomeFeed(searchParams);
+const Home = ({ searchParams }: PageProps<"/">) => (
+  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <h1 className="font-heading mb-6 text-2xl font-semibold tracking-tight sm:text-3xl">
+      Posts
+    </h1>
+    <Suspense fallback={<FeedSkeleton />}>
+      {resolveHomeFeed(searchParams)}
+    </Suspense>
+  </main>
+);
 
 export default Home;

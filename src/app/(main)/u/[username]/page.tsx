@@ -35,16 +35,15 @@ const resolveProfile = async ({
   if (search.page === "1" || routeUsername !== username) {
     redirect(getProfileHref(username, page));
   }
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
-      <Suspense fallback={<AuthorProfileSkeleton />}>
-        <AuthorProfile username={username} page={page} />
-      </Suspense>
-    </main>
-  );
+  return <AuthorProfile username={username} page={page} />;
 };
 
-const ProfilePage = (props: PageProps<"/u/[username]">) =>
-  resolveProfile(props);
+const ProfilePage = (props: PageProps<"/u/[username]">) => (
+  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <Suspense fallback={<AuthorProfileSkeleton />}>
+      {resolveProfile(props)}
+    </Suspense>
+  </main>
+);
 
 export default ProfilePage;

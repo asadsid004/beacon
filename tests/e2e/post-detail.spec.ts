@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 
 import { expect, test } from "@playwright/test";
+import { Pool } from "pg";
 import { z } from "zod";
 
 const manifestSchema = z.object({ posts: z.record(z.string(), z.uuid()) });
@@ -172,4 +173,53 @@ test("uncached document navigation renders the malformed post not-found page", a
   await expect(
     page.getByRole("heading", { name: "Posts", exact: true })
   ).toBeVisible();
+});
+
+test("public dates use the server clock and the seven-day UTC cutoff", async ({
+  page,
+}) => {
+  const { posts } = await getFixtures();
+  const pool = new Pool({ connectionString: process.env.FIXTURE_DATABASE_URL });
+  try {
+    const {
+      rows: [before],
+    } = await pool.query<{ now: Date; published_at: Date }>(
+      "SELECT clock_timestamp() AS now, published_at FROM posts WHERE id = $1",
+      [posts["date-relative"]]
+    );
+    await page.goto(`/p/${posts["date-relative"]}`);
+    const relative = page.locator("main article > header time").first();
+    await expect(relative).toBeVisible();
+    const {
+      rows: [after],
+    } = await pool.query<{ now: Date }>("SELECT clock_timestamp() AS now");
+    const days = [before.now, after.now].map((now) =>
+      Math.floor((now.getTime() - before.published_at.getTime()) / 86_400_000)
+    );
+    expect(days.every((age) => age >= 1 && age < 7)).toBeTruthy();
+    expect(days.map((age) => `${age} days ago`)).toContain(
+      await relative.textContent()
+    );
+    await expect(relative).toHaveAttribute(
+      "datetime",
+      before.published_at.toISOString()
+    );
+    const {
+      rows: [absolutePost],
+    } = await pool.query<{ published_at: Date }>(
+      "SELECT published_at FROM posts WHERE id = $1",
+      [posts["date-absolute"]]
+    );
+    await page.goto(`/p/${posts["date-absolute"]}`);
+    await expect(page.locator("main article > header time").first()).toHaveText(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }).format(absolutePost.published_at)
+    );
+  } finally {
+    await pool.end();
+  }
 });

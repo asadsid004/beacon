@@ -1,8 +1,9 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { db } from "@/db";
-import { comments, posts, users } from "@/db/schema";
+import { comments, users } from "@/db/schema";
 import { PAGE_SIZE } from "@/lib/pagination";
 
 const fields = {
@@ -15,6 +16,9 @@ const fields = {
 };
 
 export const getCommentPage = async (postId: string, commentId: string) => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`comments-${postId}`);
   const result = await db.execute(sql`
     WITH target AS (
       SELECT coalesce(parent_comment_id, id) AS ancestor FROM comments
@@ -30,18 +34,14 @@ export const getCommentPage = async (postId: string, commentId: string) => {
 };
 
 export const getPublicThread = async (postId: string, page: number) => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`comments-${postId}`);
   const rows = await db
     .select(fields)
     .from(comments)
-    .innerJoin(posts, eq(comments.postId, posts.id))
     .innerJoin(users, eq(comments.authorId, users.id))
-    .where(
-      and(
-        eq(comments.postId, postId),
-        eq(posts.status, "published"),
-        isNull(comments.parentCommentId)
-      )
-    )
+    .where(and(eq(comments.postId, postId), isNull(comments.parentCommentId)))
     .orderBy(desc(comments.score), asc(comments.createdAt), asc(comments.id))
     .limit(PAGE_SIZE + 1)
     .offset((page - 1) * PAGE_SIZE);

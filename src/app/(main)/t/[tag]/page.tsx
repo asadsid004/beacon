@@ -18,17 +18,21 @@ const resolveTagFeed = async ({
     redirect(getFeedHref({ tag, page }));
   }
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <>
       <h1 className="font-heading mb-6 text-2xl font-semibold tracking-tight sm:text-3xl">
         #{tag}
       </h1>
       <Suspense fallback={<FeedSkeleton />}>
         <Feed sort="hot" page={page} tag={tag} />
       </Suspense>
-    </main>
+    </>
   );
 };
 
-const TagPage = (props: PageProps<"/t/[tag]">) => resolveTagFeed(props);
+const TagPage = (props: PageProps<"/t/[tag]">) => (
+  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+    <Suspense fallback={<FeedSkeleton />}>{resolveTagFeed(props)}</Suspense>
+  </main>
+);
 
 export default TagPage;

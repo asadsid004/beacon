@@ -12,14 +12,18 @@ const compactNumberFormat = new Intl.NumberFormat("en-US", {
 export const VotePlaceholder = ({
   score,
   label,
+  visitor,
 }: {
   score: number;
   label: string;
+  visitor?: "pending" | "anonymous" | "authenticated";
 }) => (
   <Button
     variant="vote"
     size="vote"
     disabled
+    aria-pressed={false}
+    data-visitor-state={visitor}
     title={`${numberFormat.format(score)} upvotes`}
     aria-label={`Upvote ${label}, score ${numberFormat.format(score)}, available in a later release`}
   >
